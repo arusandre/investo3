@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Logi sisse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0B0E12;
+    --surface: #12161C;
+    --surface-2: #171C23;
+    --border: #232A33;
+    --text: #EDEFF2;
+    --text-dim: #8A93A0;
+    --text-faint: #5B636F;
+    --gain: #3ECF8E;
+    --gain-dim: rgba(62,207,142,0.12);
+    --gold: #E8B84B;
+    --error: #E5695B;
+  }
+  *{ box-sizing: border-box; margin:0; padding:0; }
+  html, body{ height: 100%; }
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 20px;
+  }
+
+  .bg-decor{
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow:hidden;
+    z-index: 0;
+  }
+  .bg-decor svg{
+    position:absolute;
+    bottom: -10%;
+    left: 0;
+    width: 100%;
+    opacity: 0.35;
+  }
+
+  .card{
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 380px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 36px 32px 30px;
+  }
+
+  .brand-row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom: 28px;
+  }
+  .brand{
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    color: var(--text-dim);
+  }
+  .brand span{ color: var(--text); }
+
+  h1{
+    font-size: 20px;
+    font-weight: 600;
+    text-align:center;
+    margin-bottom: 6px;
+  }
+  .subtitle{
+    font-size: 13px;
+    color: var(--text-faint);
+    text-align:center;
+    margin-bottom: 26px;
+  }
+
+  form{ display:flex; flex-direction:column; gap: 14px; }
+
+  .field{ display:flex; flex-direction:column; gap: 6px; }
+  .field label{
+    font-size: 12px;
+    color: var(--text-dim);
+    font-weight: 500;
+  }
+  .label-row{
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+  }
+  .label-row label{ margin: 0; }
+  .label-row .forgot{ font-size: 12px; }
+  .field input{
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 11px 12px;
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    outline: none;
+  }
+  .field input:focus{
+    border-color: var(--gold);
+  }
+  .field input::placeholder{ color: var(--text-faint); }
+
+  .row-between{
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    font-size: 12px;
+    margin-top: -2px;
+  }
+  .remember{
+    display:flex;
+    align-items:center;
+    gap: 7px;
+    color: var(--text-dim);
+  }
+  .remember input{ accent-color: var(--gold); }
+  .forgot{
+    color: var(--text-dim);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+  }
+  .forgot:hover{ border-bottom-color: var(--text-dim); }
+
+  .error-msg{
+    display:none;
+    font-size: 12px;
+    color: var(--error);
+    background: rgba(229,105,91,0.1);
+    border: 1px solid rgba(229,105,91,0.3);
+    border-radius: 8px;
+    padding: 9px 11px;
+  }
+  .error-msg.show{ display:block; }
+
+  .submit-btn{
+    margin-top: 6px;
+    background: var(--gold);
+    color: #1A1200;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .submit-btn:hover{ background: #F0C562; }
+  .submit-btn:active{ transform: translateY(1px); }
+  .submit-btn.loading{
+    opacity: 0.75;
+    pointer-events:none;
+  }
+
+  .divider{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    margin: 20px 0 16px;
+    color: var(--text-faint);
+    font-size: 11px;
+  }
+  .divider::before, .divider::after{
+    content: '';
+    flex:1;
+    height:1px;
+    background: var(--border);
+  }
+
+  .signup-line{
+    text-align:center;
+    font-size: 13px;
+    color: var(--text-faint);
+  }
+  .signup-line a{
+    color: var(--gold);
+    text-decoration:none;
+    font-weight: 600;
+  }
+  .signup-line a:hover{ text-decoration: underline; }
+
+  footer{
+    position:relative;
+    z-index:1;
+    text-align:center;
+    margin-top: 22px;
+    font-size: 11px;
+    color: var(--text-faint);
+  }
+
+  @media (max-width: 420px){
+    .card{ padding: 28px 22px 24px; }
+  }
+
+  .lang-menu{
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 5;
+  }
+  .home-link{
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 8px 14px 8px 12px;
+    color: var(--text-dim);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    text-decoration: none;
+  }
+  .home-link:hover{ color: var(--text); border-color: #333B45; }
+  .lang-btn{
+    display:flex;
+    align-items:center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 8px 14px;
+    cursor: pointer;
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .lang-btn:hover{ border-color: #333B45; }
+  .lang-flag{ font-size: 15px; line-height:1; }
+  .lang-chevron{ transition: transform 0.15s ease; }
+  .lang-menu.open .lang-chevron{ transform: rotate(180deg); }
+  .lang-dropdown{
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 170px;
+    max-height: 280px;
+    overflow-y: auto;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 6px;
+    display: none;
+    flex-direction: column;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.45);
+  }
+  .lang-menu.open .lang-dropdown{ display:flex; }
+  .lang-item{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    background: none;
+    border: none;
+    text-align: left;
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+  }
+  .lang-item:hover{ background: rgba(255,255,255,0.05); }
+  .lang-item.active{ color: var(--gold); }
+</style>
+</head>
+<body>
+
+<div class="bg-decor">
+  <svg viewBox="0 0 1000 200" preserveAspectRatio="none">
+    <path d="M0,150 L60,140 L120,155 L180,120 L240,130 L300,90 L360,110 L420,70 L480,85 L540,55 L600,75 L660,40 L720,60 L780,30 L840,45 L900,15 L960,35 L1000,20 L1000,200 L0,200 Z" fill="#3ECF8E"/>
+  </svg>
+</div>
+
+<a class="home-link" href="index.html" id="homeLink" data-i18n="back_home">← Home</a>
+
+<div class="lang-menu" id="langMenu">
+  <button class="lang-btn" id="langBtn">
+    <span class="lang-flag" id="langFlag">🇪🇪</span>
+    <span id="langCode">EST</span>
+    <svg class="lang-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1L5 5L9 1" stroke="#8A93A0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+  <div class="lang-dropdown" id="langDropdown"></div>
+</div>
+
+<div>
+  <div class="card">
+    <div class="brand-row">
+      <div class="brand"><span>In</span>vesto</div>
+    </div>
+    <h1 data-i18n="title">Tere tulemast tagasi</h1>
+    <div class="subtitle" data-i18n="subtitle">Logi sisse, et jätkata investeerimist</div>
+
+    <div class="error-msg" id="errorMsg" data-i18n="error">Vale e-post või parool. Proovi uuesti.</div>
+
+    <form id="loginForm">
+      <div class="field">
+        <label for="email" data-i18n="emailLabel">E-posti aadress</label>
+        <input type="email" id="email" placeholder="you@email.com" required>      </div>
+      <div class="field">
+        <div class="label-row">
+          <label for="password" data-i18n="passwordLabel">Parool</label>
+          <a class="forgot" href="#" data-i18n="forgot">Unustasid parooli?</a>
+        </div>
+        <input type="password" id="password" placeholder="••••••••" required>
+      </div>
+      <div class="row-between">
+        <label class="remember">
+          <input type="checkbox">
+          <span data-i18n="remember">Jäta mind meelde</span>
+        </label>
+      </div>
+      <button type="submit" class="submit-btn" id="submitBtn" data-i18n="loginBtn">Logi sisse</button>
+    </form>
+
+    <div class="divider" data-i18n="or">VÕI</div>
+    <div class="signup-line"><span data-i18n="noAccount">Kas sul pole veel kontot?</span> <a href="#" data-i18n="createAccount">Loo konto</a></div>
+  </div>
+  <footer data-i18n="footer">© 2026 Investo</footer>
+</div>
+
+<script>
+  const translations = {
+    et: {
+      title: "Tere tulemast tagasi",
+      subtitle: "Logi sisse, et jätkata investeerimist",
+      error: "Vale e-post või parool. Proovi uuesti.",
+      emailLabel: "E-posti aadress",
+      passwordLabel: "Parool",
+      remember: "Jäta mind meelde",
+      forgot: "Unustasid parooli?",
+      loginBtn: "Logi sisse",
+      loadingBtn: "Logimine...",
+      or: "VÕI",
+      noAccount: "Kas sul pole veel kontot?",
+      createAccount: "Loo konto",
+      back_home: "← Avaleht",
+      email_placeholder: "sinu@epost.ee",
+      footer: "© 2026 Investo"
+    },
+    en: {
+      title: "Welcome back",
+      subtitle: "Log in to keep investing",
+      error: "Incorrect email or password. Please try again.",
+      emailLabel: "Email address",
+      passwordLabel: "Password",
+      remember: "Remember me",
+      forgot: "Forgot your password?",
+      loginBtn: "Log in",
+      loadingBtn: "Logging in...",
+      or: "OR",
+      noAccount: "Don't have an account yet?",
+      createAccount: "Create account",
+      back_home: "← Home",
+      email_placeholder: "you@email.com",
+      footer: "© 2026 Investo"
+    },
+    ru: {
+      title: "С возвращением",
+      subtitle: "Войдите, чтобы продолжить инвестировать",
+      error: "Неверный e-mail или пароль. Попробуйте снова.",
+      emailLabel: "Электронная почта",
+      passwordLabel: "Пароль",
+      remember: "Запомнить меня",
+      forgot: "Забыли пароль?",
+      loginBtn: "Войти",
+      loadingBtn: "Вход...",
+      or: "ИЛИ",
+      noAccount: "Ещё нет аккаунта?",
+      createAccount: "Создать аккаунт",
+      back_home: "← На главную",
+      email_placeholder: "you@email.com",
+      footer: "© 2026 Investo"
+    },
+    fi: {
+      title: "Tervetuloa takaisin",
+      subtitle: "Kirjaudu sisään jatkaaksesi sijoittamista",
+      error: "Väärä sähköposti tai salasana. Yritä uudelleen.",
+      emailLabel: "Sähköpostiosoite",
+      passwordLabel: "Salasana",
+      remember: "Muista minut",
+      forgot: "Unohditko salasanan?",
+      loginBtn: "Kirjaudu sisään",
+      loadingBtn: "Kirjaudutaan...",
+      or: "TAI",
+      noAccount: "Eikö sinulla ole vielä tiliä?",
+      createAccount: "Luo tili",
+      back_home: "← Etusivulle",
+      email_placeholder: "you@email.com",
+      footer: "© 2026 Investo"
+    },
+    de: {
+      title: "Willkommen zurück",
+      subtitle: "Melde dich an, um weiter zu investieren",
+      error: "Falsche E-Mail oder falsches Passwort. Bitte versuche es erneut.",
+      emailLabel: "E-Mail-Adresse",
+      passwordLabel: "Passwort",
+      remember: "Angemeldet bleiben",
+      forgot: "Passwort vergessen?",
+      loginBtn: "Anmelden",
+      loadingBtn: "Anmeldung läuft...",
+      or: "ODER",
+      noAccount: "Noch kein Konto?",
+      createAccount: "Konto erstellen",
+      back_home: "← Startseite",
+      email_placeholder: "you@email.com",
+      footer: "© 2026 Investo"
+    },
+    es: {
+      title: "Bienvenido de nuevo",
+      subtitle: "Inicia sesión para seguir invirtiendo",
+      error: "Correo o contraseña incorrectos. Inténtalo de nuevo.",
+      emailLabel: "Correo electrónico",
+      passwordLabel: "Contraseña",
+      remember: "Recuérdame",
+      forgot: "¿Olvidaste tu contraseña?",
+      loginBtn: "Iniciar sesión",
+      loadingBtn: "Iniciando sesión...",
+      or: "O",
+      noAccount: "¿Aún no tienes una cuenta?",
+      createAccount: "Crear cuenta",
+      back_home: "← Inicio",
+      email_placeholder: "you@email.com",
+      footer: "© 2026 Investo"
+    },
+    fr: {
+      title: "Content de vous revoir",
+      subtitle: "Connectez-vous pour continuer à investir",
+      error: "E-mail ou mot de passe incorrect. Veuillez réessayer.",
+      emailLabel: "Adresse e-mail",
+      passwordLabel: "Mot de passe",
+      remember: "Se souvenir de moi",
+      forgot: "Mot de passe oublié ?",
+      loginBtn: "Se connecter",
+      loadingBtn: "Connexion...",
+      or: "OU",
+      noAccount: "Vous n'avez pas encore de compte ?",
+      createAccount: "Créer un compte",
+      back_home: "← Accueil",
+      email_placeholder: "you@email.com",
+      footer: "© 2026 Investo"
+    },
+    lv: {
+      title: "Laipni lūdzam atpakaļ",
+      subtitle: "Piesakieties, lai turpinātu ieguldīt",
+      error: "Nepareizs e-pasts vai parole. Mēģiniet vēlreiz.",
+      emailLabel: "E-pasta adrese",
+      passwordLabel: "Parole",
+      remember: "Atcerēties mani",
+      forgot: "Aizmirsāt paroli?",
+      loginBtn: "Pieslēgties",
+      loadingBtn: "Pieslēdzas...",
+      or: "VAI",
+      noAccount: "Vēl nav konta?",
+      createAccount: "Izveidot kontu",
+      back_home: "← Sākums",
+      email_placeholder: "you@email.com",
+      footer: "© 2026 Investo"
+    },
+    lt: {
+      title: "Sveiki sugrįžę",
+      subtitle: "Prisijunkite, kad tęstumėte investavimą",
+      error: "Neteisingas el. paštas arba slaptažodis. Bandykite dar kartą.",
+      emailLabel: "El. pašto adresas",
+      passwordLabel: "Slaptažodis",
+      remember: "Prisiminti mane",
+      forgot: "Pamiršote slaptažodį?",
+      loginBtn: "Prisijungti",
+      loadingBtn: "Jungiamasi...",
+      or: "ARBA",
+      noAccount: "Dar neturite paskyros?",
+      createAccount: "Sukurti paskyrą",
+      back_home: "← Pradžia",
+      email_placeholder: "you@email.com",
+      footer: "© 2026 Investo"
+    },
+    pl: {
+      title: "Witaj ponownie",
+      subtitle: "Zaloguj się, aby kontynuować inwestowanie",
+      error: "Nieprawidłowy e-mail lub hasło. Spróbuj ponownie.",
+      emailLabel: "Adres e-mail",
+      passwordLabel: "Hasło",
+      remember: "Zapamiętaj mnie",
+      forgot: "Zapomniałeś hasła?",
+      loginBtn: "Zaloguj się",
+      loadingBtn: "Logowanie...",
+      or: "LUB",
+      noAccount: "Nie masz jeszcze konta?",
+      createAccount: "Utwórz konto",
+      back_home: "← Strona główna",
+      email_placeholder: "you@email.com",
+      footer: "© 2026 Investo"
+    }
+  };
+
+  const languageList = [
+    { code: 'et', flag: '🇪🇪', label: 'EST', name: 'Eesti' },
+    { code: 'en', flag: '🇬🇧', label: 'ENG', name: 'English' },
+    { code: 'ru', flag: '🇷🇺', label: 'RUS', name: 'Русский' },
+    { code: 'fi', flag: '🇫🇮', label: 'FIN', name: 'Suomi' },
+    { code: 'de', flag: '🇩🇪', label: 'GER', name: 'Deutsch' },
+    { code: 'es', flag: '🇪🇸', label: 'ESP', name: 'Español' },
+    { code: 'fr', flag: '🇫🇷', label: 'FRA', name: 'Français' },
+    { code: 'lv', flag: '🇱🇻', label: 'LAT', name: 'Latviešu' },
+    { code: 'lt', flag: '🇱🇹', label: 'LIT', name: 'Lietuvių' },
+    { code: 'pl', flag: '🇵🇱', label: 'POL', name: 'Polski' }
+  ];
+
+  let currentLang = 'et';
+
+  const langDropdown = document.getElementById('langDropdown');
+  languageList.forEach(l => {
+    const btn = document.createElement('button');
+    btn.className = 'lang-item';
+    btn.setAttribute('data-lang', l.code);
+    btn.innerHTML = `<span class="lang-flag">${l.flag}</span><span>${l.name}</span>`;
+    btn.addEventListener('click', () => {
+      applyLanguage(l.code);
+      langMenu.classList.remove('open');
+    });
+    langDropdown.appendChild(btn);
+  });
+
+  function applyLanguage(lang){
+    const t = translations[lang] || translations.et;
+    currentLang = translations[lang] ? lang : 'et';
+    document.documentElement.setAttribute('lang', currentLang);
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if(t[key] !== undefined){ el.textContent = t[key]; }
+    });
+    document.getElementById('email').placeholder = t.email_placeholder;
+    document.getElementById('homeLink').href = 'index.html?lang=' + currentLang;
+    const meta = languageList.find(l => l.code === currentLang);
+    document.getElementById('langFlag').textContent = meta.flag;
+    document.getElementById('langCode').textContent = meta.label;
+    document.querySelectorAll('.lang-item').forEach(item => {
+      item.classList.toggle('active', item.getAttribute('data-lang') === currentLang);
+    });
+  }
+
+  // keel URL-ist (nt tagasi liikudes) või vaikimisi eesti keel
+  const urlParams = new URLSearchParams(window.location.search);
+  applyLanguage(translations[urlParams.get('lang')] ? urlParams.get('lang') : 'en');
+
+  const langMenu = document.getElementById('langMenu');
+  const langBtn = document.getElementById('langBtn');
+  langBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    langMenu.classList.toggle('open');
+  });
+  document.addEventListener('click', (e) => {
+    if(!langMenu.contains(e.target)){
+      langMenu.classList.remove('open');
+    }
+  });
+
+  const form = document.getElementById('loginForm');
+  const errorMsg = document.getElementById('errorMsg');
+  const submitBtn = document.getElementById('submitBtn');
+
+  const VALID_EMAIL = 'arus.andre1@gmail.com';
+  const VALID_PASSWORD = '3F120987XX11';
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    errorMsg.classList.remove('show');
+
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    if(email !== VALID_EMAIL || password !== VALID_PASSWORD){
+      errorMsg.classList.add('show');
+      return;
+    }
+
+    submitBtn.classList.add('loading');
+    submitBtn.textContent = translations[currentLang].loadingBtn;
+
+    setTimeout(() => {
+      window.location.href = 'portfoolio.html?lang=' + currentLang;
+    }, 500);
+  });
+</script>
+
+</body>
+</html>

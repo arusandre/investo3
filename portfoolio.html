@@ -1,0 +1,2524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfoolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0B0E12;
+    --surface: #12161C;
+    --surface-2: #171C23;
+    --border: #232A33;
+    --text: #EDEFF2;
+    --text-dim: #8A93A0;
+    --text-faint: #5B636F;
+    --gain: #3ECF8E;
+    --gain-dim: rgba(62,207,142,0.12);
+    --gold: #E8B84B;
+  }
+  *{ box-sizing: border-box; margin:0; padding:0; }
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    min-height: 100vh;
+    padding: 40px 20px 80px;
+  }
+  .wrap{
+    max-width: 880px;
+    margin: 0 auto;
+  }
+  .topbar{
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 36px;
+  }
+  .brand{
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    color: var(--text-dim);
+  }
+  .brand span{ color: var(--text); }
+  .account-pill{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--text-faint);
+    border: 1px solid var(--border);
+    padding: 6px 12px;
+    border-radius: 20px;
+  }
+
+  .hero{
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 28px;
+  }
+  .hero-label{
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+  }
+  .hero-value{
+    font-size: 56px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    line-height: 1;
+    display:flex;
+    align-items:baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .hero-value .cents{
+    font-size: 28px;
+    color: var(--text-dim);
+    font-weight: 500;
+  }
+  .hero-change{
+    margin-top: 14px;
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 15px;
+  }
+  .badge-up{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    color: var(--gain);
+    background: var(--gain-dim);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 600;
+  }
+  .hero-change .period{ color: var(--text-faint); }
+
+  .chart-card{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 24px 16px;
+    margin-bottom: 28px;
+  }
+  .chart-head{
+    display:flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+  .chart-title{
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .chart-sub{
+    font-size: 12px;
+    color: var(--text-faint);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .range-toggle{
+    display:flex;
+    gap: 4px;
+  }
+  .range-btn{
+    background: none;
+    border: none;
+    color: var(--text-faint);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .range-btn.active{
+    background: var(--surface-2);
+    color: var(--text);
+  }
+  .chart-visual{
+    position: relative;
+  }
+  .chart-tooltip{
+    position: absolute;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 11px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    pointer-events: none;
+    transform: translate(-50%, -112%);
+    white-space: nowrap;
+    display: none;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    z-index: 6;
+  }
+  .tooltip-label{ color: var(--text-faint); font-size: 11px; margin-bottom: 3px; }
+  .tooltip-value{ font-weight: 600; font-size: 13px; }
+  .tooltip-delta{ margin-top: 2px; font-size: 11px; }
+  .tooltip-delta.pos{ color: var(--gain); }
+  .tooltip-delta.neg{ color: #E5695B; }
+  svg.chart{ width: 100%; height: 220px; display:block; margin-top: 8px; cursor: crosshair; }
+  .month-labels{
+    display:flex;
+    justify-content: space-between;
+    margin-top: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text-faint);
+  }
+
+  .holdings-card{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 28px;
+  }
+  .holdings-head{
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .holding-row{
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    padding: 18px 24px;
+    gap: 16px;
+  }
+  .holding-left{
+    display:flex;
+    align-items:center;
+    gap: 14px;
+  }
+  .ticker-icon{
+    width: 38px; height:38px;
+    border-radius: 10px;
+    background: linear-gradient(135deg,#1D2733,#0F151C);
+    border: 1px solid var(--border);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gold);
+  }
+  .holding-name{ font-size: 15px; font-weight: 600; }
+  .holding-meta{ font-size: 12px; color: var(--text-faint); margin-top: 2px; }
+  .holding-right{ text-align:right; }
+  .holding-value{ font-family:'IBM Plex Mono', monospace; font-size: 15px; font-weight: 600; }
+  .holding-change{ font-family:'IBM Plex Mono', monospace; font-size: 12px; color: var(--gain); margin-top: 3px; }
+  .allocation-bar{
+    height: 4px;
+    background: var(--border);
+    margin: 0 24px 20px;
+    border-radius: 4px;
+    overflow:hidden;
+  }
+  .allocation-fill{
+    height: 100%;
+    width: 100%;
+    background: var(--gold);
+  }
+
+  .stats-grid{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .stat-card{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+  }
+  .stat-label{ font-size: 12px; color: var(--text-faint); margin-bottom: 8px; }
+  .stat-value{ font-family:'IBM Plex Mono', monospace; font-size: 20px; font-weight: 600; }
+  .stat-value.gain{ color: var(--gain); }
+
+  .other-funds-card{
+    width: 100%;
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-top: 14px;
+    cursor: pointer;
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    text-align: left;
+  }
+  .other-funds-card:hover{ border-color: #333B45; }
+  .other-funds-left{ display:flex; align-items:center; gap: 14px; }
+  .other-funds-icon{
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    background: linear-gradient(135deg,#1D2733,#0F151C);
+    border: 1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    font-size: 18px;
+    color: var(--gold);
+  }
+  .other-funds-title{ font-size: 15px; font-weight: 600; }
+  .other-funds-sub{ font-size: 12px; color: var(--text-faint); margin-top: 2px; }
+
+  .fund-row{
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 10px;
+  }
+  .fund-row:last-child{ border-bottom: none; }
+  .fund-left{ display:flex; align-items:center; gap: 12px; min-width:0; }
+  .fund-icon{
+    width: 34px; height: 34px;
+    flex-shrink:0;
+    border-radius: 9px;
+    background: linear-gradient(135deg,#1D2733,#0F151C);
+    border: 1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--gold);
+  }
+  .fund-name{ font-size: 13px; font-weight: 600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .fund-return{ font-family:'IBM Plex Mono', monospace; font-size: 12px; margin-top: 2px; }
+  .fund-return.pos{ color: var(--gain); }
+  .fund-return.neg{ color: #E5695B; }
+  .fund-select-btn{
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 7px 14px;
+    border-radius: 7px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .fund-select-btn:hover{ border-color: #333B45; }
+
+  .back-link{
+    display:inline-flex;
+    align-items:center;
+    gap: 6px;
+    background: none;
+    border: none;
+    color: var(--text-faint);
+    font-size: 12px;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 14px;
+  }
+  .back-link:hover{ color: var(--text); }
+
+  .quick-amount-row{ display:flex; gap: 8px; margin-top: -6px; margin-bottom: 14px; }
+  .quick-amount-btn{
+    flex:1;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    padding: 8px;
+    border-radius: 7px;
+    cursor: pointer;
+  }
+  .quick-amount-btn:hover{ border-color: #333B45; }
+  .quick-amount-btn.active{ border-color: var(--gold); color: var(--gold); }
+  .payment-card-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap: 8px;
+    padding: 10px 8px;
+  }
+  .card-icon.visa-icon{
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-style: italic;
+    font-weight: 700;
+    color: #5C9CE6;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+  }
+  .payment-card-btn.active .visa-icon{ color: var(--gold); }
+  .mc-icon{ display:inline-flex; align-items:center; }
+  .mc-circle{ width: 14px; height: 14px; border-radius: 50%; display:inline-block; }
+  .mc-red{ background: #EB001B; }
+  .mc-orange{ background: #F79E1B; margin-left: -6px; opacity: 0.9; }
+  .two-col-row{ display:flex; gap: 12px; }
+
+  .site-footer{
+    border-top: 1px solid var(--border);
+    margin-top: 44px;
+    padding: 40px 20px 26px;
+  }
+  .footer-inner{
+    max-width: 880px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 32px;
+    padding-bottom: 26px;
+    border-bottom: 1px solid var(--border);
+  }
+  .footer-brand-col{
+    flex: 1 1 200px;
+    max-width: 260px;
+  }
+  .footer-nav{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    flex: 2 1 420px;
+  }
+  .footer-col{
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 130px;
+    min-width: 130px;
+  }
+  .footer-brand{
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+  }
+  .footer-brand span{ color: var(--text); }
+  .footer-desc{
+    font-size: 12px;
+    color: var(--text-faint);
+    line-height: 1.55;
+    max-width: 220px;
+  }
+  .footer-col-head{
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-dim);
+    margin: 0 0 12px;
+    line-height: 1.4;
+  }
+  .footer-col a{
+    display: block;
+    font-size: 12px;
+    color: var(--text-faint);
+    text-decoration: none;
+    margin-bottom: 10px;
+  }
+  .footer-col a:hover{ color: var(--text); }
+  .footer-link{
+    display: block;
+    width: 100%;
+    background: none;
+    border: none;
+    outline: none;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    font: inherit;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--text-faint);
+    text-decoration: none;
+    text-indent: 0;
+    margin: 0 0 10px;
+    padding: 0;
+    cursor: pointer;
+    text-align: left;
+  }
+  .footer-link:hover{ color: var(--text); }
+  .info-modal-content{ font-size: 13px; line-height: 1.65; color: var(--text-dim); }
+  .info-modal-content h4{ font-size: 13px; color: var(--text); margin: 16px 0 6px; }
+  .info-modal-content h4:first-child{ margin-top: 0; }
+  .info-modal-content p{ margin-bottom: 10px; }
+  .info-modal-content ul{ margin: 0 0 10px 18px; padding: 0; }
+  .info-modal-content li{ margin-bottom: 6px; }
+  .info-modal-content .info-contact-line{ font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--text); margin-bottom: 4px; }
+  .footer-bottom{
+    max-width: 880px;
+    margin: 0 auto;
+    padding-top: 20px;
+  }
+  .footer-risk-text{
+    font-size: 11px;
+    color: var(--text-faint);
+    line-height: 1.6;
+    margin-bottom: 10px;
+    max-width: 640px;
+  }
+  .footer-copyright{ font-size: 11px; color: var(--text-faint); }
+
+  @media (max-width: 640px){
+    .footer-inner{ flex-direction: column; gap: 26px; }
+    .footer-brand-col{ max-width: none; }
+    .footer-desc{ max-width: none; }
+    .footer-nav{ flex-direction: column; gap: 24px; }
+    .footer-col{ min-width: 0; }
+  }
+
+  .topbar-right{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+  }
+  .lang-menu{
+    position: relative;
+  }
+  .lang-btn{
+    display:flex;
+    align-items:center;
+    gap: 7px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 6px 12px;
+    cursor: pointer;
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+  }
+  .lang-btn:hover{ border-color: #333B45; }
+  .lang-menu.open .chevron{ transform: rotate(180deg); }
+  .lang-dropdown{
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 150px;
+    max-height: 280px;
+    overflow-y: auto;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 6px;
+    display: none;
+    flex-direction: column;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.45);
+    z-index: 10;
+  }
+  .lang-menu.open .lang-dropdown{ display: flex; }
+  .lang-option.active{
+    color: var(--gold);
+  }
+
+  .account-menu{
+    position: relative;
+  }
+  .account-btn{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 6px 14px 6px 6px;
+    cursor: pointer;
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+  }
+  .account-btn:hover{
+    border-color: #333B45;
+  }
+  .avatar{
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg,#E8B84B,#C98F2A);
+    color: #1A1200;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .account-name{
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .chevron{
+    transition: transform 0.15s ease;
+  }
+  .account-menu.open .chevron{
+    transform: rotate(180deg);
+  }
+  .account-dropdown{
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 200px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 6px;
+    display: none;
+    flex-direction: column;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.45);
+    z-index: 10;
+  }
+  .account-menu.open .account-dropdown{
+    display: flex;
+  }
+  .dropdown-item{
+    background: none;
+    border: none;
+    text-align: left;
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    padding: 9px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .dropdown-item:hover{
+    background: rgba(255,255,255,0.05);
+  }
+  .dropdown-item.logout{
+    color: #E5695B;
+  }
+  .dropdown-divider{
+    height: 1px;
+    background: var(--border);
+    margin: 5px 4px;
+  }
+
+  footer{
+    text-align:center;
+    margin-top: 40px;
+    font-size: 11px;
+    color: var(--text-faint);
+  }
+
+  .modal-overlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(4,6,8,0.65);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 100;
+  }
+  .modal-overlay.open{ display:flex; }
+  .modal-box{
+    width: 100%;
+    max-width: 420px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+  .modal-head{
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+  }
+  .modal-title{ font-size: 17px; font-weight: 700; }
+  .modal-close{
+    background: none;
+    border: none;
+    color: var(--text-faint);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 4px;
+  }
+  .modal-close:hover{ color: var(--text); }
+
+  .info-row{
+    display:flex;
+    justify-content: space-between;
+    align-items:center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .info-row:last-child{ border-bottom: none; }
+  .info-label{ font-size: 12px; color: var(--text-faint); }
+  .info-value{ font-family:'IBM Plex Mono', monospace; font-size: 13px; text-align:right; }
+  .status-chip{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    color: var(--gain);
+    background: var(--gain-dim);
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .toggle-row{
+    display:flex;
+    justify-content: space-between;
+    align-items:center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .toggle-row:last-child{ border-bottom: none; }
+  .switch{
+    position: relative;
+    width: 40px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+  .switch input{ opacity: 0; width:0; height:0; }
+  .slider{
+    position:absolute; inset:0;
+    background: var(--border);
+    border-radius: 22px;
+    cursor: pointer;
+    transition: 0.15s;
+  }
+  .slider::before{
+    content:'';
+    position:absolute;
+    width: 16px; height:16px;
+    left: 3px; top: 3px;
+    background: var(--text);
+    border-radius: 50%;
+    transition: 0.15s;
+  }
+  .switch input:checked + .slider{ background: var(--gain); }
+  .switch input:checked + .slider::before{ transform: translateX(18px); background: #06110B; }
+
+  select.settings-select{
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    padding: 6px 8px;
+    border-radius: 6px;
+  }
+
+  .field-block{ display:flex; flex-direction:column; gap: 6px; margin-bottom: 14px; min-width: 0; }
+  .field-block label{ font-size: 12px; color: var(--text-dim); }
+  .field-block input{
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 11px;
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    outline: none;
+    min-width: 0;
+  }
+  .field-block input:focus{ border-color: var(--gold); }
+  .field-hint{ font-size: 11px; color: var(--text-faint); }
+  .two-col-row .field-block{ flex: 1; min-width: 0; }
+
+  .modal-btn{
+    width: 100%;
+    background: var(--gold);
+    color: #1A1200;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 6px;
+  }
+  .modal-btn:hover{ background: #F0C562; }
+  .modal-btn.secondary{
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .modal-btn.secondary:hover{ border-color: #333B45; }
+  .modal-btn.danger{
+    background: var(--error, #E5695B);
+    color: #FFF;
+  }
+  .btn-row{ display:flex; gap: 10px; margin-top: 6px; }
+  .btn-row .modal-btn{ margin-top: 0; }
+
+  .success-box{ text-align:center; padding: 10px 0 4px; }
+  .success-icon{
+    width: 48px; height:48px;
+    border-radius: 50%;
+    background: var(--gain-dim);
+    color: var(--gain);
+    display:flex; align-items:center; justify-content:center;
+    font-size: 22px;
+    margin: 0 auto 14px;
+  }
+  .success-title{ font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .success-text{ font-size: 13px; color: var(--text-dim); line-height:1.5; margin-bottom: 18px; }
+
+  @media (max-width: 560px){
+    .hero-value{ font-size: 40px; }
+    .stats-grid{ grid-template-columns: 1fr; }
+    .holding-row{ padding: 16px; }
+    .chart-card{ padding: 18px 16px 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand"><span>In</span>vesto</div>
+    <div class="topbar-right">
+    <div class="lang-menu" id="langMenu">
+      <button class="lang-btn" id="langBtn">
+        <span class="globe">🌐</span>
+        <span class="lang-code" id="langCode">ET</span>
+        <svg class="chevron" width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1L5 5L9 1" stroke="#8A93A0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="lang-dropdown" id="langDropdown">
+        <button class="dropdown-item lang-option" data-lang="et">Eesti</button>
+        <button class="dropdown-item lang-option" data-lang="en">English</button>
+        <button class="dropdown-item lang-option" data-lang="ru">Русский</button>
+        <button class="dropdown-item lang-option" data-lang="fi">Suomi</button>
+        <button class="dropdown-item lang-option" data-lang="de">Deutsch</button>
+        <button class="dropdown-item lang-option" data-lang="es">Español</button>
+        <button class="dropdown-item lang-option" data-lang="fr">Français</button>
+        <button class="dropdown-item lang-option" data-lang="lv">Latviešu</button>
+        <button class="dropdown-item lang-option" data-lang="lt">Lietuvių</button>
+        <button class="dropdown-item lang-option" data-lang="pl">Polski</button>
+      </div>
+    </div>
+    <div class="account-menu" id="accountMenu">
+      <button class="account-btn" id="accountBtn">
+        <span class="avatar">AA</span>
+        <span class="account-name">Andre Arus</span>
+        <svg class="chevron" width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1L5 5L9 1" stroke="#8A93A0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="account-dropdown" id="accountDropdown">
+        <button class="dropdown-item" data-i18n="menu_manage" data-action="manage">Halda kontot</button>
+        <button class="dropdown-item" data-i18n="menu_settings" data-action="settings">Seaded</button>
+        <button class="dropdown-item" data-i18n="menu_deposit" data-action="deposit">Lisa raha</button>
+        <button class="dropdown-item" data-i18n="menu_withdraw" data-action="withdraw">Võta raha välja</button>
+        <div class="dropdown-divider"></div>
+        <button class="dropdown-item logout" data-i18n="menu_logout" data-action="logout">Logi välja</button>
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="hero-label" data-i18n="hero_label">Portfelli koguväärtus</div>
+    <div class="hero-value">€75 432<span class="cents">,00</span></div>
+    <div class="hero-change">
+      <span class="badge-up">▲ +7,00 %</span>
+      <span>+€4 934,80</span>
+      <span class="period" data-i18n="hero_period">viimase 12 kuu jooksul</span>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-head">
+      <div>
+        <div class="chart-title" data-i18n="chart_title">Väärtuse muutus</div>
+        <div class="chart-sub" data-i18n="chart_sub">S&amp;P 500 indeksifond</div>
+      </div>
+      <div class="range-toggle" id="rangeToggle">
+        <button class="range-btn" data-range="1m" id="rangeBtn1m">1K</button>
+        <button class="range-btn" data-range="6m" id="rangeBtn6m">6K</button>
+        <button class="range-btn active" data-range="1y" id="rangeBtn1y">1A</button>
+      </div>
+    </div>
+    <div class="chart-visual" id="chartVisual">
+      <svg class="chart" viewBox="0 0 700 220" preserveAspectRatio="none" id="chartSvg">
+        <defs>
+          <linearGradient id="fillGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#3ECF8E" stop-opacity="0.28"/>
+            <stop offset="100%" stop-color="#3ECF8E" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <g id="gridLines"></g>
+        <path id="areaPath" fill="url(#fillGrad)" stroke="none"></path>
+        <path id="linePath" fill="none" stroke="#3ECF8E" stroke-width="2"></path>
+        <line id="hoverLine" x1="0" y1="0" x2="0" y2="220" stroke="#3B4653" stroke-width="1" style="opacity:0;"></line>
+        <circle id="hoverDot" r="4.5" fill="#3ECF8E" stroke="#0B0E12" stroke-width="2" style="opacity:0;"></circle>
+        <circle id="endDot" r="4" fill="#3ECF8E"></circle>
+      </svg>
+      <div class="chart-tooltip" id="chartTooltip"></div>
+    </div>
+    <div class="month-labels" id="monthLabels"></div>
+  </div>
+
+  <div class="holdings-card">
+    <div class="holdings-head" data-i18n="holdings_head">Osalused</div>
+    <div class="holding-row">
+      <div class="holding-left">
+        <div class="ticker-icon">SPX</div>
+        <div>
+          <div class="holding-name" data-i18n="holding_name">S&amp;P 500 indeksifond</div>
+          <div class="holding-meta" data-i18n="holding_meta">100 % portfellist</div>
+        </div>
+      </div>
+      <div class="holding-right">
+        <div class="holding-value">€75 432,00</div>
+        <div class="holding-change">▲ +7,00 %</div>
+      </div>
+    </div>
+    <div class="allocation-bar"><div class="allocation-fill"></div></div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label" data-i18n="stat_invested">Investeeritud summa</div>
+      <div class="stat-value">€70 497,20</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label" data-i18n="stat_profit">Kasum</div>
+      <div class="stat-value gain">+€4 934,80</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label" data-i18n="stat_return">Tootlus (1 aasta)</div>
+      <div class="stat-value gain">+7,00 %</div>
+    </div>
+  </div>
+
+  <button class="other-funds-card" id="otherFundsBtn">
+    <div class="other-funds-left">
+      <div class="other-funds-icon">＋</div>
+      <div>
+        <div class="other-funds-title" data-i18n="other_funds_title">Teised fondid</div>
+        <div class="other-funds-sub" data-i18n="other_funds_sub">Vaata populaarseid fonde ja kanna raha üle</div>
+      </div>
+    </div>
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3L11 8L6 13" stroke="#8A93A0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand-col">
+      <div class="footer-brand"><span>In</span>vesto</div>
+      <div class="footer-desc" data-i18n="footer_desc">Investeeri lihtsalt ja turvaliselt maailma populaarseimatesse fondidesse.</div>
+    </div>
+    <div class="footer-nav">
+    <div class="footer-col">
+      <div class="footer-col-head" data-i18n="footer_company_head">Ettevõte</div>
+      <button class="footer-link" data-footer="about" data-i18n="footer_about_us">Meist</button>
+      <button class="footer-link" data-footer="careers" data-i18n="footer_careers">Karjäär</button>
+      <button class="footer-link" data-footer="press" data-i18n="footer_press">Uudised</button>
+      <button class="footer-link" data-footer="contact" data-i18n="footer_contact">Kontakt</button>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-head" data-i18n="footer_support_head">Tugi</div>
+      <button class="footer-link" data-footer="help" data-i18n="footer_help_center">Abikeskus</button>
+      <button class="footer-link" data-footer="faq" data-i18n="footer_faq">KKK</button>
+      <button class="footer-link" data-footer="security" data-i18n="footer_security">Turvalisus</button>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-head" data-i18n="footer_legal_head">Õiguslik</div>
+      <button class="footer-link" data-footer="terms" data-i18n="footer_terms">Kasutustingimused</button>
+      <button class="footer-link" data-footer="privacy" data-i18n="footer_privacy">Privaatsuspoliitika</button>
+      <button class="footer-link" data-footer="risk" data-i18n="footer_risk">Riskihoiatus</button>
+    </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-risk-text" data-i18n="footer_risk_disclaimer">Investeerimisega kaasneb risk, sealhulgas kapitali kaotamise võimalus. Minevikutootlus ei taga tulevikutulemusi.</div>
+    <div class="footer-copyright" data-i18n="footer_copyright">© 2026 Investo. Kõik õigused kaitstud.</div>
+  </div>
+</footer>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box" id="modalBox">
+    <div class="modal-head">
+      <div class="modal-title" id="modalTitle"></div>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+  // ===== Graafiku baasandmed (12 kuud, algusest lõpuni) =====
+  const fullValues = (() => {
+    const start = 70497.20;
+    const end = 75432;
+    const raw = [1.0, 1.012, 0.995, 1.008, 1.031, 1.018, 1.045, 1.028, 1.052, 1.061, 1.048, 1.070, 1.070];
+    const vals = raw.map(m => start * m);
+    vals[vals.length-1] = end;
+    return vals;
+  })();
+
+  const w = 700, h = 220, pad = 8;
+
+  const gridEl = document.getElementById('gridLines');
+  const linePathEl = document.getElementById('linePath');
+  const areaPathEl = document.getElementById('areaPath');
+  const endDotEl = document.getElementById('endDot');
+  const hoverLineEl = document.getElementById('hoverLine');
+  const hoverDotEl = document.getElementById('hoverDot');
+  const chartSvgEl = document.getElementById('chartSvg');
+  const chartVisualEl = document.getElementById('chartVisual');
+  const chartTooltipEl = document.getElementById('chartTooltip');
+
+  let currentRangeValues = [];
+  let currentRangeLabels = [];
+  let currentRangeIsDaily = false;
+  let currentMin = 0, currentMax = 1, currentStepX = 1;
+  let activeRange = '1y';
+
+  function fmtEUR(n){
+    const sign = n < 0 ? '-' : '';
+    return sign + '€' + Math.abs(n).toLocaleString('et-EE', {minimumFractionDigits:2, maximumFractionDigits:2});
+  }
+
+  function yForVal(v){
+    return h - pad - ((v - currentMin) / (currentMax - currentMin)) * (h - pad*2);
+  }
+
+  // genereerib 1 kuu igapäevased andmed, interpoleerides eelviimase ja viimase kuu väärtuse vahel
+  function build1MValues(){
+    const startV = fullValues[fullValues.length-2];
+    const endV = fullValues[fullValues.length-1];
+    const n = 30;
+    const vals = [];
+    for(let i=0;i<n;i++){
+      const frac = i/(n-1);
+      const noise = Math.sin(i*1.3)*0.004 + Math.sin(i*0.55)*0.0025;
+      vals.push(startV + (endV-startV)*frac + startV*noise);
+    }
+    vals[n-1] = endV;
+    return vals;
+  }
+
+  function getRangeData(range){
+    const t = translations[currentLang] || translations.et;
+    if(range === '1y'){
+      return { values: fullValues, labels: t.months.slice(), isDaily: false };
+    } else if(range === '6m'){
+      return { values: fullValues.slice(6), labels: t.months.slice(6), isDaily: false };
+    } else {
+      const vals = build1MValues();
+      const labs = vals.map((_, i) => String(i+1));
+      return { values: vals, labels: labs, isDaily: true };
+    }
+  }
+
+  function renderRangeLabels(labs){
+    labelWrap.innerHTML = '';
+    const n = labs.length;
+    const showEvery = n <= 8 ? 1 : Math.ceil(n/6);
+    labs.forEach((l, i) => {
+      if(i % showEvery === 0 || i === n-1){
+        const span = document.createElement('span');
+        span.textContent = l;
+        labelWrap.appendChild(span);
+      }
+    });
+  }
+
+  function drawChart(range){
+    activeRange = range;
+    const data = getRangeData(range);
+    currentRangeValues = data.values;
+    currentRangeLabels = data.labels;
+    currentRangeIsDaily = data.isDaily;
+
+    currentMin = Math.min(...currentRangeValues) * 0.985;
+    currentMax = Math.max(...currentRangeValues) * 1.01;
+    currentStepX = (w - pad*2) / (currentRangeValues.length - 1);
+
+    const pts = currentRangeValues.map((v,i) => [pad + i*currentStepX, yForVal(v)]);
+    const lineD = pts.map((p,i) => (i===0?'M':'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+    const areaD = lineD + ` L${(pad+(currentRangeValues.length-1)*currentStepX).toFixed(1)},${h-pad} L${pad},${h-pad} Z`;
+
+    linePathEl.setAttribute('d', lineD);
+    areaPathEl.setAttribute('d', areaD);
+    const last = pts[pts.length-1];
+    endDotEl.setAttribute('cx', last[0]);
+    endDotEl.setAttribute('cy', last[1]);
+
+    gridEl.innerHTML = '';
+    for(let i=1;i<4;i++){
+      const gy = pad + i*(h-pad*2)/4;
+      const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1', pad); line.setAttribute('x2', w-pad);
+      line.setAttribute('y1', gy); line.setAttribute('y2', gy);
+      line.setAttribute('stroke', '#1C222A'); line.setAttribute('stroke-width', '1');
+      gridEl.appendChild(line);
+    }
+
+    renderRangeLabels(currentRangeLabels);
+    hideTooltip();
+
+    document.querySelectorAll('.range-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-range') === range);
+    });
+  }
+
+  // ===== Hõljutamisel kuvatav tooltip =====
+  function showTooltipAt(clientX){
+    const rect = chartSvgEl.getBoundingClientRect();
+    if(rect.width === 0) return;
+    const relX = clientX - rect.left;
+    const scaleX = w / rect.width;
+    const svgX = relX * scaleX;
+    let idx = Math.round((svgX - pad) / currentStepX);
+    idx = Math.max(0, Math.min(currentRangeValues.length - 1, idx));
+
+    const val = currentRangeValues[idx];
+    const px = pad + idx * currentStepX;
+    const py = yForVal(val);
+
+    hoverLineEl.setAttribute('x1', px); hoverLineEl.setAttribute('x2', px);
+    hoverLineEl.setAttribute('y1', pad); hoverLineEl.setAttribute('y2', h - pad);
+    hoverLineEl.style.opacity = 1;
+    hoverDotEl.setAttribute('cx', px); hoverDotEl.setAttribute('cy', py);
+    hoverDotEl.style.opacity = 1;
+
+    const wrapperRect = chartVisualEl.getBoundingClientRect();
+    const pxPixel = (px / w) * rect.width + (rect.left - wrapperRect.left);
+    const pyPixel = (py / h) * rect.height + (rect.top - wrapperRect.top);
+    chartTooltipEl.style.left = pxPixel + 'px';
+    chartTooltipEl.style.top = pyPixel + 'px';
+    chartTooltipEl.style.display = 'block';
+
+    const t = translations[currentLang] || translations.et;
+    const label = currentRangeIsDaily ? (t.tooltip_day + ' ' + currentRangeLabels[idx]) : currentRangeLabels[idx];
+    const deltaVal = val - currentRangeValues[0];
+    const deltaPct = currentRangeValues[0] !== 0 ? (deltaVal / currentRangeValues[0]) * 100 : 0;
+    const sign = deltaVal >= 0 ? '+' : '';
+    chartTooltipEl.innerHTML = `
+      <div class="tooltip-label">${label}</div>
+      <div class="tooltip-value">${fmtEUR(val)}</div>
+      <div class="tooltip-delta ${deltaVal >= 0 ? 'pos' : 'neg'}">${sign}${fmtEUR(deltaVal)} (${sign}${deltaPct.toFixed(2)}%)</div>
+    `;
+  }
+
+  function hideTooltip(){
+    hoverLineEl.style.opacity = 0;
+    hoverDotEl.style.opacity = 0;
+    chartTooltipEl.style.display = 'none';
+  }
+
+  chartVisualEl.addEventListener('mousemove', (e) => showTooltipAt(e.clientX));
+  chartVisualEl.addEventListener('mouseleave', hideTooltip);
+  chartVisualEl.addEventListener('touchmove', (e) => {
+    if(e.touches && e.touches[0]) showTooltipAt(e.touches[0].clientX);
+  }, {passive:true});
+  chartVisualEl.addEventListener('touchend', hideTooltip);
+
+  document.querySelectorAll('.range-btn').forEach(btn => {
+    btn.addEventListener('click', () => drawChart(btn.getAttribute('data-range')));
+  });
+
+  // ===== Tõlked =====
+  const translations = {
+    et: {
+      hero_label: "Portfelli koguväärtus",
+      hero_period: "viimase 12 kuu jooksul",
+      chart_title: "Väärtuse muutus",
+      chart_sub: "S&P 500 indeksifond",
+      range_1m: "1K",
+      range_6m: "6K",
+      range_1y: "1A",
+      tooltip_day: "Päev",
+      holdings_head: "Osalused",
+      holding_name: "S&P 500 indeksifond",
+      holding_meta: "100 % portfellist",
+      stat_invested: "Investeeritud summa",
+      stat_profit: "Kasum",
+      stat_return: "Tootlus (1 aasta)",
+      footer_disclaimer: "Näidisandmed illustratiivsel eesmärgil. See ei ole investeerimisnõustamine.",
+      menu_manage: "Halda kontot",
+      menu_settings: "Seaded",
+      menu_withdraw: "Võta raha välja",
+      menu_logout: "Logi välja",
+      months: ["Sept","Okt","Nov","Dets","Jaan","Veebr","Märts","Apr","Mai","Juuni","Juuli","Aug","Sept"],
+      modal_manage_title: "Konto andmed",
+      field_name: "Nimi",
+      field_email: "E-post",
+      field_phone: "Telefon",
+      field_account: "Konto number",
+      field_status: "Staatus",
+      status_verified: "Kinnitatud",
+      btn_close: "Sulge",
+      modal_settings_title: "Seaded",
+      setting_notifications: "E-posti teavitused",
+      setting_push: "Push-teavitused",
+      setting_2fa: "Kaheastmeline autentimine",
+      setting_currency: "Valuuta",
+      settings_save: "Salvesta muudatused",
+      modal_withdraw_title: "Võta raha välja",
+      withdraw_available: "Saadaval väljamakseks",
+      withdraw_amount_label: "Summa (€)",
+      withdraw_account_label: "Sihtkonto (IBAN)",
+      withdraw_submit: "Kinnita väljamakse",
+      withdraw_error: "Väljamakse summa peab võrduma portfelli koguväärtusega ({amount}). Väiksemat summat välja võtta ei saa.",
+      withdraw_success_title: "Taotlus saadetud",
+      withdraw_success_text: "Sinu väljamakse taotlus on vastu võetud ja jõuab sihtkontole 1–3 tööpäeva jooksul.",
+      logout_title: "Kas soovid välja logida?",
+      logout_text: "Sinu seanss lõpetatakse ja sind suunatakse sisselogimislehele.",
+      logout_cancel: "Tühista",
+      logout_confirm: "Logi välja",
+      other_funds_title: "Teised fondid",
+      other_funds_sub: "Vaata populaarseid fonde ja kanna raha üle",
+      modal_funds_title: "Teised fondid",
+      fund_select_btn: "Vali",
+      transfer_back: "Tagasi fondide juurde",
+      transfer_amount_label: "Summa (€)",
+      transfer_all_label: "Kogu portfell",
+      transfer_confirm_btn: "Kinnita ülekanne",
+      transfer_error: "Sisesta summa vahemikus {min} – {max}.",
+      transfer_success_title: "Ülekanne tehtud",
+      transfer_success_text: "{amount} on üle kantud fondi {fund}. Muudatus kajastub portfellis lähipäevil.",
+      menu_deposit: "Lisa raha",
+      modal_deposit_title: "Lisa raha",
+      deposit_amount_label: "Summa (€)",
+      deposit_method_label: "Makseviis",
+      deposit_card_number_label: "Kaardi number",
+      deposit_card_expiry_label: "Kehtivusaeg",
+      deposit_card_cvv_label: "CVV",
+      deposit_card_error: "Kontrolli kaardi andmeid – number, kehtivusaeg ja CVV peavad olema täidetud.",
+      deposit_method_bank: "Pangaülekanne",
+      deposit_method_card: "Pangakaart",
+      deposit_confirm_btn: "Kinnita lisamine",
+      deposit_error: "Sisesta summa vähemalt {min}.",
+      deposit_success_title: "Raha lisatud",
+      deposit_success_text: "{amount} on lisatud sinu kontole ja on investeerimiseks valmis mõne minuti jooksul.",
+      footer_desc: "Investeeri lihtsalt ja turvaliselt maailma populaarseimatesse fondidesse.",
+      footer_company_head: "Ettevõte",
+      footer_about_us: "Meist",
+      footer_careers: "Karjäär",
+      footer_press: "Uudised",
+      footer_contact: "Kontakt",
+      footer_support_head: "Tugi",
+      footer_help_center: "Abikeskus",
+      footer_faq: "KKK",
+      footer_security: "Turvalisus",
+      footer_legal_head: "Õiguslik",
+      footer_terms: "Kasutustingimused",
+      footer_privacy: "Privaatsuspoliitika",
+      footer_risk: "Riskihoiatus",
+      footer_risk_disclaimer: "Investeerimisega kaasneb risk, sealhulgas kapitali kaotamise võimalus. Minevikutootlus ei taga tulevikutulemusi.",
+      footer_copyright: "© 2026 Investo. Kõik õigused kaitstud."
+    },
+    en: {
+      hero_label: "Total portfolio value",
+      hero_period: "over the past 12 months",
+      chart_title: "Value over time",
+      chart_sub: "S&P 500 index fund",
+      range_1m: "1M",
+      range_6m: "6M",
+      range_1y: "1Y",
+      tooltip_day: "Day",
+      holdings_head: "Holdings",
+      holding_name: "S&P 500 Index Fund",
+      holding_meta: "100% of portfolio",
+      stat_invested: "Amount invested",
+      stat_profit: "Profit",
+      stat_return: "Return (1 year)",
+      footer_disclaimer: "Sample data for illustration only. This is not investment advice.",
+      menu_manage: "Manage account",
+      menu_settings: "Settings",
+      menu_withdraw: "Withdraw funds",
+      menu_logout: "Log out",
+      months: ["Sep","Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep"],
+      modal_manage_title: "Account details",
+      field_name: "Name",
+      field_email: "Email",
+      field_phone: "Phone",
+      field_account: "Account number",
+      field_status: "Status",
+      status_verified: "Verified",
+      btn_close: "Close",
+      modal_settings_title: "Settings",
+      setting_notifications: "Email notifications",
+      setting_push: "Push notifications",
+      setting_2fa: "Two-factor authentication",
+      setting_currency: "Currency",
+      settings_save: "Save changes",
+      modal_withdraw_title: "Withdraw funds",
+      withdraw_available: "Available to withdraw",
+      withdraw_amount_label: "Amount (€)",
+      withdraw_account_label: "Destination account (IBAN)",
+      withdraw_submit: "Confirm withdrawal",
+      withdraw_error: "The withdrawal amount must equal your total portfolio value ({amount}). You can't withdraw a smaller amount.",
+      withdraw_success_title: "Request submitted",
+      withdraw_success_text: "Your withdrawal request has been received and will arrive in the destination account within 1–3 business days.",
+      logout_title: "Log out?",
+      logout_text: "Your session will end and you'll be taken to the login page.",
+      logout_cancel: "Cancel",
+      logout_confirm: "Log out",
+      other_funds_title: "Other funds",
+      other_funds_sub: "Browse popular funds and transfer money",
+      modal_funds_title: "Other funds",
+      fund_select_btn: "Select",
+      transfer_back: "Back to funds",
+      transfer_amount_label: "Amount (€)",
+      transfer_all_label: "Whole portfolio",
+      transfer_confirm_btn: "Confirm transfer",
+      transfer_error: "Enter an amount between {min} and {max}.",
+      transfer_success_title: "Transfer complete",
+      transfer_success_text: "{amount} has been transferred to {fund}. The change will appear in your portfolio within a few days.",
+      menu_deposit: "Add funds",
+      modal_deposit_title: "Add funds",
+      deposit_amount_label: "Amount (€)",
+      deposit_method_label: "Payment method",
+      deposit_card_number_label: "Card number",
+      deposit_card_expiry_label: "Expiry date",
+      deposit_card_cvv_label: "CVV",
+      deposit_card_error: "Check your card details – number, expiry, and CVV are all required.",
+      footer_content_fallback: "This content is currently only available in Estonian.",
+      deposit_method_bank: "Bank transfer",
+      deposit_method_card: "Debit/credit card",
+      deposit_confirm_btn: "Confirm deposit",
+      deposit_error: "Enter an amount of at least {min}.",
+      deposit_success_title: "Funds added",
+      deposit_success_text: "{amount} has been added to your account and will be ready to invest within a few minutes.",
+      footer_desc: "Invest simply and securely in the world's most popular funds.",
+      footer_company_head: "Company",
+      footer_about_us: "About us",
+      footer_careers: "Careers",
+      footer_press: "Press",
+      footer_contact: "Contact",
+      footer_support_head: "Support",
+      footer_help_center: "Help center",
+      footer_faq: "FAQ",
+      footer_security: "Security",
+      footer_legal_head: "Legal",
+      footer_terms: "Terms of service",
+      footer_privacy: "Privacy policy",
+      footer_risk: "Risk disclosure",
+      footer_risk_disclaimer: "Investing involves risk, including the possible loss of capital. Past performance does not guarantee future results.",
+      footer_copyright: "© 2026 Investo. All rights reserved."
+    },
+    ru: {
+      hero_label: "Общая стоимость портфеля",
+      hero_period: "за последние 12 месяцев",
+      chart_title: "Изменение стоимости",
+      chart_sub: "Индексный фонд S&P 500",
+      range_1m: "1М",
+      range_6m: "6М",
+      range_1y: "1Г",
+      tooltip_day: "День",
+      holdings_head: "Активы",
+      holding_name: "Индексный фонд S&P 500",
+      holding_meta: "100 % портфеля",
+      stat_invested: "Инвестированная сумма",
+      stat_profit: "Прибыль",
+      stat_return: "Доходность (1 год)",
+      footer_disclaimer: "Демонстрационные данные. Это не является инвестиционной рекомендацией.",
+      menu_manage: "Управление счётом",
+      menu_settings: "Настройки",
+      menu_withdraw: "Вывести средства",
+      menu_logout: "Выйти",
+      months: ["Сен","Окт","Ноя","Дек","Янв","Фев","Мар","Апр","Май","Июн","Июл","Авг","Сен"],
+      modal_manage_title: "Данные счёта",
+      field_name: "Имя",
+      field_email: "Эл. почта",
+      field_phone: "Телефон",
+      field_account: "Номер счёта",
+      field_status: "Статус",
+      status_verified: "Подтверждено",
+      btn_close: "Закрыть",
+      modal_settings_title: "Настройки",
+      setting_notifications: "Уведомления на почту",
+      setting_push: "Push-уведомления",
+      setting_2fa: "Двухфакторная аутентификация",
+      setting_currency: "Валюта",
+      settings_save: "Сохранить изменения",
+      modal_withdraw_title: "Вывести средства",
+      withdraw_available: "Доступно для вывода",
+      withdraw_amount_label: "Сумма (€)",
+      withdraw_account_label: "Счёт получателя (IBAN)",
+      withdraw_submit: "Подтвердить вывод",
+      withdraw_error: "Сумма вывода должна равняться общей стоимости портфеля ({amount}). Вывести меньшую сумму нельзя.",
+      withdraw_success_title: "Заявка отправлена",
+      withdraw_success_text: "Ваша заявка на вывод принята и поступит на счёт в течение 1–3 рабочих дней.",
+      logout_title: "Выйти из аккаунта?",
+      logout_text: "Ваш сеанс завершится, и вы будете перенаправлены на страницу входа.",
+      logout_cancel: "Отмена",
+      logout_confirm: "Выйти",
+      other_funds_title: "Другие фонды",
+      other_funds_sub: "Просмотрите популярные фонды и переведите средства",
+      modal_funds_title: "Другие фонды",
+      fund_select_btn: "Выбрать",
+      transfer_back: "Назад к фондам",
+      transfer_amount_label: "Сумма (€)",
+      transfer_all_label: "Весь портфель",
+      transfer_confirm_btn: "Подтвердить перевод",
+      transfer_error: "Введите сумму от {min} до {max}.",
+      transfer_success_title: "Перевод выполнен",
+      transfer_success_text: "{amount} переведено в фонд {fund}. Изменение отразится в портфеле в ближайшие дни.",
+      menu_deposit: "Пополнить счёт",
+      modal_deposit_title: "Пополнить счёт",
+      deposit_amount_label: "Сумма (€)",
+      deposit_method_label: "Способ оплаты",
+      deposit_card_number_label: "Номер карты",
+      deposit_card_expiry_label: "Срок действия",
+      deposit_card_cvv_label: "CVV",
+      deposit_card_error: "Проверьте данные карты – номер, срок действия и CVV обязательны.",
+      footer_content_fallback: "Этот контент пока доступен только на эстонском языке.",
+      deposit_method_bank: "Банковский перевод",
+      deposit_method_card: "Банковская карта",
+      deposit_confirm_btn: "Подтвердить пополнение",
+      deposit_error: "Введите сумму не менее {min}.",
+      deposit_success_title: "Средства зачислены",
+      deposit_success_text: "{amount} зачислено на ваш счёт и будет готово к инвестированию через несколько минут.",
+      footer_desc: "Инвестируйте просто и безопасно в самые популярные фонды мира.",
+      footer_company_head: "Компания",
+      footer_about_us: "О нас",
+      footer_careers: "Карьера",
+      footer_press: "Новости",
+      footer_contact: "Контакты",
+      footer_support_head: "Поддержка",
+      footer_help_center: "Центр помощи",
+      footer_faq: "Вопросы и ответы",
+      footer_security: "Безопасность",
+      footer_legal_head: "Правовая информация",
+      footer_terms: "Условия использования",
+      footer_privacy: "Политика конфиденциальности",
+      footer_risk: "Уведомление о рисках",
+      footer_risk_disclaimer: "Инвестирование связано с риском, включая возможную потерю капитала. Доходность в прошлом не гарантирует результаты в будущем.",
+      footer_copyright: "© 2026 Investo. Все права защищены."
+    },
+    fi: {
+      hero_label: "Salkun kokonaisarvo",
+      hero_period: "viimeisen 12 kuukauden aikana",
+      chart_title: "Arvon kehitys",
+      chart_sub: "S&P 500 -indeksirahasto",
+      range_1m: "1KK",
+      range_6m: "6KK",
+      range_1y: "1V",
+      tooltip_day: "Päivä",
+      holdings_head: "Sijoitukset",
+      holding_name: "S&P 500 -indeksirahasto",
+      holding_meta: "100 % salkusta",
+      stat_invested: "Sijoitettu summa",
+      stat_profit: "Tuotto",
+      stat_return: "Tuotto (1 vuosi)",
+      footer_disclaimer: "Esimerkkitietoja havainnollistamiseksi. Tämä ei ole sijoitusneuvontaa.",
+      menu_manage: "Hallinnoi tiliä",
+      menu_settings: "Asetukset",
+      menu_withdraw: "Nosta varoja",
+      menu_logout: "Kirjaudu ulos",
+      months: ["Syys","Loka","Marras","Joulu","Tammi","Helmi","Maalis","Huhti","Touko","Kesä","Heinä","Elo","Syys"],
+      modal_manage_title: "Tilin tiedot",
+      field_name: "Nimi",
+      field_email: "Sähköposti",
+      field_phone: "Puhelin",
+      field_account: "Tilinumero",
+      field_status: "Tila",
+      status_verified: "Vahvistettu",
+      btn_close: "Sulje",
+      modal_settings_title: "Asetukset",
+      setting_notifications: "Sähköposti-ilmoitukset",
+      setting_push: "Push-ilmoitukset",
+      setting_2fa: "Kaksivaiheinen tunnistautuminen",
+      setting_currency: "Valuutta",
+      settings_save: "Tallenna muutokset",
+      modal_withdraw_title: "Nosta varoja",
+      withdraw_available: "Nostettavissa",
+      withdraw_amount_label: "Summa (€)",
+      withdraw_account_label: "Vastaanottava tili (IBAN)",
+      withdraw_submit: "Vahvista nosto",
+      withdraw_error: "Nostosumman on oltava sama kuin salkun kokonaisarvo ({amount}). Pienempää summaa ei voi nostaa.",
+      withdraw_success_title: "Pyyntö lähetetty",
+      withdraw_success_text: "Nostopyyntösi on vastaanotettu ja se saapuu tilille 1–3 arkipäivän kuluessa.",
+      logout_title: "Haluatko kirjautua ulos?",
+      logout_text: "Istuntosi päättyy ja sinut ohjataan kirjautumissivulle.",
+      logout_cancel: "Peruuta",
+      logout_confirm: "Kirjaudu ulos",
+      other_funds_title: "Muut rahastot",
+      other_funds_sub: "Selaa suosittuja rahastoja ja siirrä varoja",
+      modal_funds_title: "Muut rahastot",
+      fund_select_btn: "Valitse",
+      transfer_back: "Takaisin rahastoihin",
+      transfer_amount_label: "Summa (€)",
+      transfer_all_label: "Koko salkku",
+      transfer_confirm_btn: "Vahvista siirto",
+      transfer_error: "Syötä summa väliltä {min} – {max}.",
+      transfer_success_title: "Siirto tehty",
+      transfer_success_text: "{amount} on siirretty rahastoon {fund}. Muutos näkyy salkussa muutaman päivän kuluessa.",
+      menu_deposit: "Lisää varoja",
+      modal_deposit_title: "Lisää varoja",
+      deposit_amount_label: "Summa (€)",
+      deposit_method_label: "Maksutapa",
+      deposit_card_number_label: "Kortin numero",
+      deposit_card_expiry_label: "Voimassaoloaika",
+      deposit_card_cvv_label: "CVV",
+      deposit_card_error: "Tarkista kortin tiedot – numero, voimassaoloaika ja CVV vaaditaan.",
+      footer_content_fallback: "Tämä sisältö on toistaiseksi saatavilla vain viroksi.",
+      deposit_method_bank: "Pankkisiirto",
+      deposit_method_card: "Pankkikortti",
+      deposit_confirm_btn: "Vahvista talletus",
+      deposit_error: "Syötä vähintään {min}.",
+      deposit_success_title: "Varat lisätty",
+      deposit_success_text: "{amount} on lisätty tilillesi ja on sijoitusvalmis muutaman minuutin kuluessa.",
+      footer_desc: "Sijoita helposti ja turvallisesti maailman suosituimpiin rahastoihin.",
+      footer_company_head: "Yritys",
+      footer_about_us: "Meistä",
+      footer_careers: "Ura",
+      footer_press: "Uutiset",
+      footer_contact: "Yhteystiedot",
+      footer_support_head: "Tuki",
+      footer_help_center: "Ohjekeskus",
+      footer_faq: "UKK",
+      footer_security: "Turvallisuus",
+      footer_legal_head: "Oikeudellinen",
+      footer_terms: "Käyttöehdot",
+      footer_privacy: "Tietosuojakäytäntö",
+      footer_risk: "Riski-ilmoitus",
+      footer_risk_disclaimer: "Sijoittamiseen liittyy riskejä, mukaan lukien pääoman menettämisen mahdollisuus. Aiempi tuotto ei takaa tulevaa tulosta.",
+      footer_copyright: "© 2026 Investo. Kaikki oikeudet pidätetään."
+    },
+    de: {
+      hero_label: "Gesamtwert des Portfolios",
+      hero_period: "in den letzten 12 Monaten",
+      chart_title: "Wertentwicklung",
+      chart_sub: "S&P 500 Indexfonds",
+      range_1m: "1M",
+      range_6m: "6M",
+      range_1y: "1J",
+      tooltip_day: "Tag",
+      holdings_head: "Bestände",
+      holding_name: "S&P 500 Indexfonds",
+      holding_meta: "100 % des Portfolios",
+      stat_invested: "Investierter Betrag",
+      stat_profit: "Gewinn",
+      stat_return: "Rendite (1 Jahr)",
+      footer_disclaimer: "Beispieldaten zur Veranschaulichung. Dies ist keine Anlageberatung.",
+      menu_manage: "Konto verwalten",
+      menu_settings: "Einstellungen",
+      menu_withdraw: "Geld abheben",
+      menu_logout: "Abmelden",
+      months: ["Sep","Okt","Nov","Dez","Jan","Feb","Mär","Apr","Mai","Jun","Jul","Aug","Sep"],
+      modal_manage_title: "Kontodaten",
+      field_name: "Name",
+      field_email: "E-Mail",
+      field_phone: "Telefon",
+      field_account: "Kontonummer",
+      field_status: "Status",
+      status_verified: "Verifiziert",
+      btn_close: "Schließen",
+      modal_settings_title: "Einstellungen",
+      setting_notifications: "E-Mail-Benachrichtigungen",
+      setting_push: "Push-Benachrichtigungen",
+      setting_2fa: "Zwei-Faktor-Authentifizierung",
+      setting_currency: "Währung",
+      settings_save: "Änderungen speichern",
+      modal_withdraw_title: "Geld abheben",
+      withdraw_available: "Verfügbar zum Abheben",
+      withdraw_amount_label: "Betrag (€)",
+      withdraw_account_label: "Zielkonto (IBAN)",
+      withdraw_submit: "Auszahlung bestätigen",
+      withdraw_error: "Der Auszahlungsbetrag muss dem Gesamtwert deines Portfolios entsprechen ({amount}). Ein kleinerer Betrag ist nicht möglich.",
+      withdraw_success_title: "Anfrage gesendet",
+      withdraw_success_text: "Deine Auszahlungsanfrage wurde erhalten und wird innerhalb von 1–3 Werktagen auf dem Zielkonto eingehen.",
+      logout_title: "Möchtest du dich abmelden?",
+      logout_text: "Deine Sitzung wird beendet und du wirst zur Anmeldeseite weitergeleitet.",
+      logout_cancel: "Abbrechen",
+      logout_confirm: "Abmelden",
+      other_funds_title: "Andere Fonds",
+      other_funds_sub: "Beliebte Fonds ansehen und Geld überweisen",
+      modal_funds_title: "Andere Fonds",
+      fund_select_btn: "Auswählen",
+      transfer_back: "Zurück zu den Fonds",
+      transfer_amount_label: "Betrag (€)",
+      transfer_all_label: "Gesamtes Portfolio",
+      transfer_confirm_btn: "Überweisung bestätigen",
+      transfer_error: "Gib einen Betrag zwischen {min} und {max} ein.",
+      transfer_success_title: "Überweisung abgeschlossen",
+      transfer_success_text: "{amount} wurde auf {fund} übertragen. Die Änderung erscheint in wenigen Tagen in deinem Portfolio.",
+      menu_deposit: "Geld einzahlen",
+      modal_deposit_title: "Geld einzahlen",
+      deposit_amount_label: "Betrag (€)",
+      deposit_method_label: "Zahlungsmethode",
+      deposit_card_number_label: "Kartennummer",
+      deposit_card_expiry_label: "Ablaufdatum",
+      deposit_card_cvv_label: "CVV",
+      deposit_card_error: "Überprüfe deine Kartendaten – Nummer, Ablaufdatum und CVV sind erforderlich.",
+      footer_content_fallback: "Dieser Inhalt ist derzeit nur auf Estnisch verfügbar.",
+      deposit_method_bank: "Banküberweisung",
+      deposit_method_card: "Bankkarte",
+      deposit_confirm_btn: "Einzahlung bestätigen",
+      deposit_error: "Gib mindestens {min} ein.",
+      deposit_success_title: "Geld eingezahlt",
+      deposit_success_text: "{amount} wurde deinem Konto gutgeschrieben und ist innerhalb weniger Minuten investitionsbereit.",
+      footer_desc: "Investiere einfach und sicher in die beliebtesten Fonds der Welt.",
+      footer_company_head: "Unternehmen",
+      footer_about_us: "Über uns",
+      footer_careers: "Karriere",
+      footer_press: "Presse",
+      footer_contact: "Kontakt",
+      footer_support_head: "Support",
+      footer_help_center: "Hilfe-Center",
+      footer_faq: "FAQ",
+      footer_security: "Sicherheit",
+      footer_legal_head: "Rechtliches",
+      footer_terms: "Nutzungsbedingungen",
+      footer_privacy: "Datenschutzrichtlinie",
+      footer_risk: "Risikohinweis",
+      footer_risk_disclaimer: "Investieren ist mit Risiken verbunden, einschließlich des möglichen Verlusts des eingesetzten Kapitals. Die Wertentwicklung der Vergangenheit ist kein Indikator für zukünftige Ergebnisse.",
+      footer_copyright: "© 2026 Investo. Alle Rechte vorbehalten."
+    },
+    es: {
+      hero_label: "Valor total de la cartera",
+      hero_period: "en los últimos 12 meses",
+      chart_title: "Evolución del valor",
+      chart_sub: "Fondo indexado S&P 500",
+      range_1m: "1M",
+      range_6m: "6M",
+      range_1y: "1A",
+      tooltip_day: "Día",
+      holdings_head: "Posiciones",
+      holding_name: "Fondo indexado S&P 500",
+      holding_meta: "100 % de la cartera",
+      stat_invested: "Importe invertido",
+      stat_profit: "Ganancia",
+      stat_return: "Rentabilidad (1 año)",
+      footer_disclaimer: "Datos de ejemplo con fines ilustrativos. Esto no es asesoramiento de inversión.",
+      menu_manage: "Gestionar cuenta",
+      menu_settings: "Configuración",
+      menu_withdraw: "Retirar fondos",
+      menu_logout: "Cerrar sesión",
+      months: ["Sept","Oct","Nov","Dic","Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sept"],
+      modal_manage_title: "Datos de la cuenta",
+      field_name: "Nombre",
+      field_email: "Correo",
+      field_phone: "Teléfono",
+      field_account: "Número de cuenta",
+      field_status: "Estado",
+      status_verified: "Verificado",
+      btn_close: "Cerrar",
+      modal_settings_title: "Configuración",
+      setting_notifications: "Notificaciones por correo",
+      setting_push: "Notificaciones push",
+      setting_2fa: "Autenticación de dos factores",
+      setting_currency: "Moneda",
+      settings_save: "Guardar cambios",
+      modal_withdraw_title: "Retirar fondos",
+      withdraw_available: "Disponible para retirar",
+      withdraw_amount_label: "Importe (€)",
+      withdraw_account_label: "Cuenta destino (IBAN)",
+      withdraw_submit: "Confirmar retiro",
+      withdraw_error: "El importe del retiro debe ser igual al valor total de tu cartera ({amount}). No puedes retirar un importe menor.",
+      withdraw_success_title: "Solicitud enviada",
+      withdraw_success_text: "Tu solicitud de retiro ha sido recibida y llegará a la cuenta destino en 1–3 días hábiles.",
+      logout_title: "¿Cerrar sesión?",
+      logout_text: "Tu sesión finalizará y serás redirigido a la página de inicio de sesión.",
+      logout_cancel: "Cancelar",
+      logout_confirm: "Cerrar sesión",
+      other_funds_title: "Otros fondos",
+      other_funds_sub: "Explora fondos populares y transfiere dinero",
+      modal_funds_title: "Otros fondos",
+      fund_select_btn: "Seleccionar",
+      transfer_back: "Volver a los fondos",
+      transfer_amount_label: "Importe (€)",
+      transfer_all_label: "Toda la cartera",
+      transfer_confirm_btn: "Confirmar transferencia",
+      transfer_error: "Introduce un importe entre {min} y {max}.",
+      transfer_success_title: "Transferencia completada",
+      transfer_success_text: "{amount} se ha transferido a {fund}. El cambio aparecerá en tu cartera en unos días.",
+      menu_deposit: "Añadir fondos",
+      modal_deposit_title: "Añadir fondos",
+      deposit_amount_label: "Importe (€)",
+      deposit_method_label: "Método de pago",
+      deposit_card_number_label: "Número de tarjeta",
+      deposit_card_expiry_label: "Fecha de caducidad",
+      deposit_card_cvv_label: "CVV",
+      deposit_card_error: "Revisa los datos de tu tarjeta: número, caducidad y CVV son obligatorios.",
+      footer_content_fallback: "Este contenido está disponible actualmente solo en estonio.",
+      deposit_method_bank: "Transferencia bancaria",
+      deposit_method_card: "Tarjeta bancaria",
+      deposit_confirm_btn: "Confirmar depósito",
+      deposit_error: "Introduce un importe de al menos {min}.",
+      deposit_success_title: "Fondos añadidos",
+      deposit_success_text: "{amount} se ha añadido a tu cuenta y estará listo para invertir en unos minutos.",
+      footer_desc: "Invierte de forma sencilla y segura en los fondos más populares del mundo.",
+      footer_company_head: "Empresa",
+      footer_about_us: "Sobre nosotros",
+      footer_careers: "Empleo",
+      footer_press: "Prensa",
+      footer_contact: "Contacto",
+      footer_support_head: "Soporte",
+      footer_help_center: "Centro de ayuda",
+      footer_faq: "Preguntas frecuentes",
+      footer_security: "Seguridad",
+      footer_legal_head: "Legal",
+      footer_terms: "Términos de servicio",
+      footer_privacy: "Política de privacidad",
+      footer_risk: "Advertencia de riesgo",
+      footer_risk_disclaimer: "Invertir conlleva riesgos, incluida la posible pérdida del capital. La rentabilidad pasada no garantiza resultados futuros.",
+      footer_copyright: "© 2026 Investo. Todos los derechos reservados."
+    },
+    fr: {
+      hero_label: "Valeur totale du portefeuille",
+      hero_period: "au cours des 12 derniers mois",
+      chart_title: "Évolution de la valeur",
+      chart_sub: "Fonds indiciel S&P 500",
+      range_1m: "1M",
+      range_6m: "6M",
+      range_1y: "1A",
+      tooltip_day: "Jour",
+      holdings_head: "Positions",
+      holding_name: "Fonds indiciel S&P 500",
+      holding_meta: "100 % du portefeuille",
+      stat_invested: "Montant investi",
+      stat_profit: "Gain",
+      stat_return: "Rendement (1 an)",
+      footer_disclaimer: "Données d'exemple à titre indicatif uniquement. Ceci n'est pas un conseil en investissement.",
+      menu_manage: "Gérer le compte",
+      menu_settings: "Paramètres",
+      menu_withdraw: "Retirer des fonds",
+      menu_logout: "Se déconnecter",
+      months: ["Sept","Oct","Nov","Déc","Janv","Févr","Mars","Avr","Mai","Juin","Juil","Août","Sept"],
+      modal_manage_title: "Détails du compte",
+      field_name: "Nom",
+      field_email: "E-mail",
+      field_phone: "Téléphone",
+      field_account: "Numéro de compte",
+      field_status: "Statut",
+      status_verified: "Vérifié",
+      btn_close: "Fermer",
+      modal_settings_title: "Paramètres",
+      setting_notifications: "Notifications par e-mail",
+      setting_push: "Notifications push",
+      setting_2fa: "Authentification à deux facteurs",
+      setting_currency: "Devise",
+      settings_save: "Enregistrer les modifications",
+      modal_withdraw_title: "Retirer des fonds",
+      withdraw_available: "Disponible pour le retrait",
+      withdraw_amount_label: "Montant (€)",
+      withdraw_account_label: "Compte de destination (IBAN)",
+      withdraw_submit: "Confirmer le retrait",
+      withdraw_error: "Le montant du retrait doit être égal à la valeur totale de votre portefeuille ({amount}). Vous ne pouvez pas retirer un montant inférieur.",
+      withdraw_success_title: "Demande envoyée",
+      withdraw_success_text: "Votre demande de retrait a été reçue et arrivera sur le compte de destination sous 1 à 3 jours ouvrés.",
+      logout_title: "Se déconnecter ?",
+      logout_text: "Votre session sera terminée et vous serez redirigé vers la page de connexion.",
+      logout_cancel: "Annuler",
+      logout_confirm: "Se déconnecter",
+      other_funds_title: "Autres fonds",
+      other_funds_sub: "Découvrez des fonds populaires et transférez de l'argent",
+      modal_funds_title: "Autres fonds",
+      fund_select_btn: "Sélectionner",
+      transfer_back: "Retour aux fonds",
+      transfer_amount_label: "Montant (€)",
+      transfer_all_label: "Tout le portefeuille",
+      transfer_confirm_btn: "Confirmer le transfert",
+      transfer_error: "Saisissez un montant entre {min} et {max}.",
+      transfer_success_title: "Transfert effectué",
+      transfer_success_text: "{amount} a été transféré vers {fund}. Le changement apparaîtra dans votre portefeuille sous quelques jours.",
+      menu_deposit: "Ajouter des fonds",
+      modal_deposit_title: "Ajouter des fonds",
+      deposit_amount_label: "Montant (€)",
+      deposit_method_label: "Moyen de paiement",
+      deposit_card_number_label: "Numéro de carte",
+      deposit_card_expiry_label: "Date d'expiration",
+      deposit_card_cvv_label: "CVV",
+      deposit_card_error: "Vérifiez les informations de votre carte – numéro, expiration et CVV sont requis.",
+      footer_content_fallback: "Ce contenu n'est actuellement disponible qu'en estonien.",
+      deposit_method_bank: "Virement bancaire",
+      deposit_method_card: "Carte bancaire",
+      deposit_confirm_btn: "Confirmer le dépôt",
+      deposit_error: "Saisissez un montant d'au moins {min}.",
+      deposit_success_title: "Fonds ajoutés",
+      deposit_success_text: "{amount} a été ajouté à votre compte et sera prêt à être investi dans quelques minutes.",
+      footer_desc: "Investissez simplement et en toute sécurité dans les fonds les plus populaires au monde.",
+      footer_company_head: "Entreprise",
+      footer_about_us: "À propos",
+      footer_careers: "Carrières",
+      footer_press: "Presse",
+      footer_contact: "Contact",
+      footer_support_head: "Assistance",
+      footer_help_center: "Centre d'aide",
+      footer_faq: "FAQ",
+      footer_security: "Sécurité",
+      footer_legal_head: "Mentions légales",
+      footer_terms: "Conditions d'utilisation",
+      footer_privacy: "Politique de confidentialité",
+      footer_risk: "Avertissement sur les risques",
+      footer_risk_disclaimer: "Investir comporte des risques, y compris la perte possible du capital. Les performances passées ne garantissent pas les résultats futurs.",
+      footer_copyright: "© 2026 Investo. Tous droits réservés."
+    },
+    lv: {
+      hero_label: "Portfeļa kopējā vērtība",
+      hero_period: "pēdējo 12 mēnešu laikā",
+      chart_title: "Vērtības izmaiņas",
+      chart_sub: "S&P 500 indeksu fonds",
+      range_1m: "1M",
+      range_6m: "6M",
+      range_1y: "1G",
+      tooltip_day: "Diena",
+      holdings_head: "Ieguldījumi",
+      holding_name: "S&P 500 indeksu fonds",
+      holding_meta: "100 % no portfeļa",
+      stat_invested: "Ieguldītā summa",
+      stat_profit: "Peļņa",
+      stat_return: "Ienesīgums (1 gads)",
+      footer_disclaimer: "Parauga dati ilustratīviem nolūkiem. Tas nav ieguldījumu konsultācijas.",
+      menu_manage: "Pārvaldīt kontu",
+      menu_settings: "Iestatījumi",
+      menu_withdraw: "Izņemt naudu",
+      menu_logout: "Izrakstīties",
+      months: ["Sept","Okt","Nov","Dec","Jan","Feb","Marts","Apr","Maijs","Jūn","Jūl","Aug","Sept"],
+      modal_manage_title: "Konta dati",
+      field_name: "Vārds",
+      field_email: "E-pasts",
+      field_phone: "Tālrunis",
+      field_account: "Konta numurs",
+      field_status: "Statuss",
+      status_verified: "Apstiprināts",
+      btn_close: "Aizvērt",
+      modal_settings_title: "Iestatījumi",
+      setting_notifications: "E-pasta paziņojumi",
+      setting_push: "Push paziņojumi",
+      setting_2fa: "Divfaktoru autentifikācija",
+      setting_currency: "Valūta",
+      settings_save: "Saglabāt izmaiņas",
+      modal_withdraw_title: "Izņemt naudu",
+      withdraw_available: "Pieejams izņemšanai",
+      withdraw_amount_label: "Summa (€)",
+      withdraw_account_label: "Saņēmēja konts (IBAN)",
+      withdraw_submit: "Apstiprināt izmaksu",
+      withdraw_error: "Izmaksas summai jābūt vienādai ar portfeļa kopējo vērtību ({amount}). Mazāku summu izņemt nevar.",
+      withdraw_success_title: "Pieprasījums nosūtīts",
+      withdraw_success_text: "Jūsu izmaksas pieprasījums ir saņemts un nonāks kontā 1–3 darba dienu laikā.",
+      logout_title: "Vai vēlaties izrakstīties?",
+      logout_text: "Jūsu sesija tiks pārtraukta un jūs tiksiet novirzīts uz pieteikšanās lapu.",
+      logout_cancel: "Atcelt",
+      logout_confirm: "Izrakstīties",
+      other_funds_title: "Citi fondi",
+      other_funds_sub: "Apskatiet populārus fondus un pārskaitiet naudu",
+      modal_funds_title: "Citi fondi",
+      fund_select_btn: "Izvēlēties",
+      transfer_back: "Atpakaļ pie fondiem",
+      transfer_amount_label: "Summa (€)",
+      transfer_all_label: "Viss portfelis",
+      transfer_confirm_btn: "Apstiprināt pārskaitījumu",
+      transfer_error: "Ievadiet summu no {min} līdz {max}.",
+      transfer_success_title: "Pārskaitījums veikts",
+      transfer_success_text: "{amount} ir pārskaitīts uz {fund}. Izmaiņas parādīsies portfelī tuvākajās dienās.",
+      menu_deposit: "Pievienot naudu",
+      modal_deposit_title: "Pievienot naudu",
+      deposit_amount_label: "Summa (€)",
+      deposit_method_label: "Maksājuma veids",
+      deposit_card_number_label: "Kartes numurs",
+      deposit_card_expiry_label: "Derīguma termiņš",
+      deposit_card_cvv_label: "CVV",
+      deposit_card_error: "Pārbaudiet kartes datus – jānorāda numurs, derīguma termiņš un CVV.",
+      footer_content_fallback: "Šis saturs pašlaik ir pieejams tikai igauņu valodā.",
+      deposit_method_bank: "Bankas pārskaitījums",
+      deposit_method_card: "Bankas karte",
+      deposit_confirm_btn: "Apstiprināt iemaksu",
+      deposit_error: "Ievadiet summu vismaz {min}.",
+      deposit_success_title: "Nauda pievienota",
+      deposit_success_text: "{amount} ir pievienots jūsu kontam un būs gatavs ieguldīšanai dažu minūšu laikā.",
+      footer_desc: "Ieguldiet vienkārši un droši pasaules populārākajos fondos.",
+      footer_company_head: "Uzņēmums",
+      footer_about_us: "Par mums",
+      footer_careers: "Karjera",
+      footer_press: "Jaunumi",
+      footer_contact: "Kontakti",
+      footer_support_head: "Atbalsts",
+      footer_help_center: "Palīdzības centrs",
+      footer_faq: "BUJ",
+      footer_security: "Drošība",
+      footer_legal_head: "Juridiskā informācija",
+      footer_terms: "Lietošanas noteikumi",
+      footer_privacy: "Privātuma politika",
+      footer_risk: "Riska brīdinājums",
+      footer_risk_disclaimer: "Ieguldīšana ir saistīta ar risku, tostarp iespējamu kapitāla zaudēšanu. Iepriekšējie rezultāti negarantē nākotnes rezultātus.",
+      footer_copyright: "© 2026 Investo. Visas tiesības aizsargātas."
+    },
+    lt: {
+      hero_label: "Bendra portfelio vertė",
+      hero_period: "per pastaruosius 12 mėnesių",
+      chart_title: "Vertės pokytis",
+      chart_sub: "S&P 500 indeksinis fondas",
+      range_1m: "1mėn",
+      range_6m: "6mėn",
+      range_1y: "1m.",
+      tooltip_day: "Diena",
+      holdings_head: "Investicijos",
+      holding_name: "S&P 500 indeksinis fondas",
+      holding_meta: "100 % portfelio",
+      stat_invested: "Investuota suma",
+      stat_profit: "Pelnas",
+      stat_return: "Grąža (1 metai)",
+      footer_disclaimer: "Pavyzdiniai duomenys tik iliustracijai. Tai nėra investavimo patarimas.",
+      menu_manage: "Tvarkyti paskyrą",
+      menu_settings: "Nustatymai",
+      menu_withdraw: "Išsiimti lėšas",
+      menu_logout: "Atsijungti",
+      months: ["Rgs","Spa","Lap","Gr","Sau","Vas","Kov","Bal","Geg","Bir","Lie","Rgp","Rgs"],
+      modal_manage_title: "Paskyros duomenys",
+      field_name: "Vardas",
+      field_email: "El. paštas",
+      field_phone: "Telefonas",
+      field_account: "Sąskaitos numeris",
+      field_status: "Būsena",
+      status_verified: "Patvirtinta",
+      btn_close: "Uždaryti",
+      modal_settings_title: "Nustatymai",
+      setting_notifications: "El. pašto pranešimai",
+      setting_push: "Push pranešimai",
+      setting_2fa: "Dviejų faktorių autentifikacija",
+      setting_currency: "Valiuta",
+      settings_save: "Išsaugoti pakeitimus",
+      modal_withdraw_title: "Išsiimti lėšas",
+      withdraw_available: "Galima išsiimti",
+      withdraw_amount_label: "Suma (€)",
+      withdraw_account_label: "Gavėjo sąskaita (IBAN)",
+      withdraw_submit: "Patvirtinti išmoką",
+      withdraw_error: "Išmokos suma turi būti lygi bendrai portfelio vertei ({amount}). Mažesnės sumos išsiimti negalima.",
+      withdraw_success_title: "Prašymas išsiųstas",
+      withdraw_success_text: "Jūsų išmokos prašymas gautas ir pasieks sąskaitą per 1–3 darbo dienas.",
+      logout_title: "Ar norite atsijungti?",
+      logout_text: "Jūsų sesija bus baigta ir būsite nukreipti į prisijungimo puslapį.",
+      logout_cancel: "Atšaukti",
+      logout_confirm: "Atsijungti",
+      other_funds_title: "Kiti fondai",
+      other_funds_sub: "Peržiūrėkite populiarius fondus ir pervesk lėšas",
+      modal_funds_title: "Kiti fondai",
+      fund_select_btn: "Pasirinkti",
+      transfer_back: "Atgal prie fondų",
+      transfer_amount_label: "Suma (€)",
+      transfer_all_label: "Visas portfelis",
+      transfer_confirm_btn: "Patvirtinti pervedimą",
+      transfer_error: "Įveskite sumą nuo {min} iki {max}.",
+      transfer_success_title: "Pervedimas atliktas",
+      transfer_success_text: "{amount} pervesta į {fund}. Pakeitimas portfelyje atsiras per kelias dienas.",
+      menu_deposit: "Pridėti lėšų",
+      modal_deposit_title: "Pridėti lėšų",
+      deposit_amount_label: "Suma (€)",
+      deposit_method_label: "Mokėjimo būdas",
+      deposit_card_number_label: "Kortelės numeris",
+      deposit_card_expiry_label: "Galiojimo data",
+      deposit_card_cvv_label: "CVV",
+      deposit_card_error: "Patikrinkite kortelės duomenis – reikalingas numeris, galiojimo data ir CVV.",
+      footer_content_fallback: "Šis turinys šiuo metu prieinamas tik estų kalba.",
+      deposit_method_bank: "Banko pavedimas",
+      deposit_method_card: "Banko kortelė",
+      deposit_confirm_btn: "Patvirtinti įnašą",
+      deposit_error: "Įveskite bent {min}.",
+      deposit_success_title: "Lėšos pridėtos",
+      deposit_success_text: "{amount} pridėta prie jūsų paskyros ir bus pasiruošusi investuoti per kelias minutes.",
+      footer_desc: "Investuokite paprastai ir saugiai į populiariausius pasaulio fondus.",
+      footer_company_head: "Įmonė",
+      footer_about_us: "Apie mus",
+      footer_careers: "Karjera",
+      footer_press: "Naujienos",
+      footer_contact: "Kontaktai",
+      footer_support_head: "Pagalba",
+      footer_help_center: "Pagalbos centras",
+      footer_faq: "DUK",
+      footer_security: "Saugumas",
+      footer_legal_head: "Teisinė informacija",
+      footer_terms: "Naudojimo sąlygos",
+      footer_privacy: "Privatumo politika",
+      footer_risk: "Rizikos įspėjimas",
+      footer_risk_disclaimer: "Investavimas susijęs su rizika, įskaitant galimą kapitalo praradimą. Ankstesni rezultatai negarantuoja būsimų rezultatų.",
+      footer_copyright: "© 2026 Investo. Visos teisės saugomos."
+    },
+    pl: {
+      hero_label: "Łączna wartość portfela",
+      hero_period: "w ciągu ostatnich 12 miesięcy",
+      chart_title: "Zmiana wartości",
+      chart_sub: "Fundusz indeksowy S&P 500",
+      range_1m: "1M",
+      range_6m: "6M",
+      range_1y: "1R",
+      tooltip_day: "Dzień",
+      holdings_head: "Aktywa",
+      holding_name: "Fundusz indeksowy S&P 500",
+      holding_meta: "100% portfela",
+      stat_invested: "Zainwestowana kwota",
+      stat_profit: "Zysk",
+      stat_return: "Zwrot (1 rok)",
+      footer_disclaimer: "Przykładowe dane wyłącznie w celach ilustracyjnych. To nie jest porada inwestycyjna.",
+      menu_manage: "Zarządzaj kontem",
+      menu_settings: "Ustawienia",
+      menu_withdraw: "Wypłać środki",
+      menu_logout: "Wyloguj się",
+      months: ["Wrz","Paź","Lis","Gru","Sty","Lut","Mar","Kwi","Maj","Cze","Lip","Sie","Wrz"],
+      modal_manage_title: "Dane konta",
+      field_name: "Imię i nazwisko",
+      field_email: "E-mail",
+      field_phone: "Telefon",
+      field_account: "Numer konta",
+      field_status: "Status",
+      status_verified: "Zweryfikowano",
+      btn_close: "Zamknij",
+      modal_settings_title: "Ustawienia",
+      setting_notifications: "Powiadomienia e-mail",
+      setting_push: "Powiadomienia push",
+      setting_2fa: "Uwierzytelnianie dwuskładnikowe",
+      setting_currency: "Waluta",
+      settings_save: "Zapisz zmiany",
+      modal_withdraw_title: "Wypłać środki",
+      withdraw_available: "Dostępne do wypłaty",
+      withdraw_amount_label: "Kwota (€)",
+      withdraw_account_label: "Konto docelowe (IBAN)",
+      withdraw_submit: "Potwierdź wypłatę",
+      withdraw_error: "Kwota wypłaty musi być równa łącznej wartości portfela ({amount}). Nie można wypłacić mniejszej kwoty.",
+      withdraw_success_title: "Wniosek wysłany",
+      withdraw_success_text: "Twój wniosek o wypłatę został przyjęty i dotrze na konto docelowe w ciągu 1–3 dni roboczych.",
+      logout_title: "Wylogować się?",
+      logout_text: "Twoja sesja zostanie zakończona, a Ty zostaniesz przekierowany do strony logowania.",
+      logout_cancel: "Anuluj",
+      logout_confirm: "Wyloguj się",
+      other_funds_title: "Inne fundusze",
+      other_funds_sub: "Przeglądaj popularne fundusze i przelewaj środki",
+      modal_funds_title: "Inne fundusze",
+      fund_select_btn: "Wybierz",
+      transfer_back: "Powrót do funduszy",
+      transfer_amount_label: "Kwota (€)",
+      transfer_all_label: "Cały portfel",
+      transfer_confirm_btn: "Potwierdź przelew",
+      transfer_error: "Wprowadź kwotę od {min} do {max}.",
+      transfer_success_title: "Przelew zrealizowany",
+      transfer_success_text: "{amount} zostało przelane do {fund}. Zmiana pojawi się w portfelu w ciągu kilku dni.",
+      menu_deposit: "Dodaj środki",
+      modal_deposit_title: "Dodaj środki",
+      deposit_amount_label: "Kwota (€)",
+      deposit_method_label: "Metoda płatności",
+      deposit_card_number_label: "Numer karty",
+      deposit_card_expiry_label: "Data ważności",
+      deposit_card_cvv_label: "CVV",
+      deposit_card_error: "Sprawdź dane karty – numer, data ważności i CVV są wymagane.",
+      footer_content_fallback: "Ta treść jest obecnie dostępna tylko w języku estońskim.",
+      deposit_method_bank: "Przelew bankowy",
+      deposit_method_card: "Karta bankowa",
+      deposit_confirm_btn: "Potwierdź wpłatę",
+      deposit_error: "Wprowadź kwotę co najmniej {min}.",
+      deposit_success_title: "Środki dodane",
+      deposit_success_text: "{amount} zostało dodane do Twojego konta i będzie gotowe do inwestowania w ciągu kilku minut.",
+      footer_desc: "Inwestuj prosto i bezpiecznie w najpopularniejsze fundusze na świecie.",
+      footer_company_head: "Firma",
+      footer_about_us: "O nas",
+      footer_careers: "Kariera",
+      footer_press: "Aktualności",
+      footer_contact: "Kontakt",
+      footer_support_head: "Wsparcie",
+      footer_help_center: "Centrum pomocy",
+      footer_faq: "FAQ",
+      footer_security: "Bezpieczeństwo",
+      footer_legal_head: "Informacje prawne",
+      footer_terms: "Warunki korzystania",
+      footer_privacy: "Polityka prywatności",
+      footer_risk: "Ostrzeżenie o ryzyku",
+      footer_risk_disclaimer: "Inwestowanie wiąże się z ryzykiem, w tym z możliwością utraty kapitału. Wyniki osiągnięte w przeszłości nie gwarantują przyszłych rezultatów.",
+      footer_copyright: "© 2026 Investo. Wszelkie prawa zastrzeżone."
+    }
+  };
+
+  const labelWrap = document.getElementById('monthLabels');
+  const rangeBtn1m = document.getElementById('rangeBtn1m');
+  const rangeBtn6m = document.getElementById('rangeBtn6m');
+  const rangeBtn1y = document.getElementById('rangeBtn1y');
+  const langCodeEl = document.getElementById('langCode');
+  let currentLang = 'et';
+
+  function applyLanguage(lang){
+    const t = translations[lang] || translations.et;
+    currentLang = translations[lang] ? lang : 'et';
+    document.documentElement.setAttribute('lang', currentLang);
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if(t[key] !== undefined){ el.textContent = t[key]; }
+    });
+    rangeBtn1m.textContent = t.range_1m;
+    rangeBtn6m.textContent = t.range_6m;
+    rangeBtn1y.textContent = t.range_1y;
+    langCodeEl.textContent = currentLang.toUpperCase();
+    drawChart(activeRange);
+    document.querySelectorAll('.lang-option').forEach(opt => {
+      opt.classList.toggle('active', opt.getAttribute('data-lang') === currentLang);
+    });
+  }
+
+  // keele valik URL-ist (nt saabudes sisselogimislehelt) või vaikimisi eesti keel
+  const urlParams = new URLSearchParams(window.location.search);
+  const initialLang = translations[urlParams.get('lang')] ? urlParams.get('lang') : 'en';
+  applyLanguage(initialLang);
+
+  const langMenu = document.getElementById('langMenu');
+  const langBtn = document.getElementById('langBtn');
+  langBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    langMenu.classList.toggle('open');
+  });
+  document.querySelectorAll('.lang-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      applyLanguage(opt.getAttribute('data-lang'));
+      langMenu.classList.remove('open');
+    });
+  });
+
+  // konto rippmenüü
+  const accountMenu = document.getElementById('accountMenu');
+  const accountBtn = document.getElementById('accountBtn');
+  accountBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    accountMenu.classList.toggle('open');
+  });
+  document.addEventListener('click', (e) => {
+    if(!accountMenu.contains(e.target)){
+      accountMenu.classList.remove('open');
+    }
+    if(!langMenu.contains(e.target)){
+      langMenu.classList.remove('open');
+    }
+  });
+  document.querySelectorAll('.account-dropdown .dropdown-item').forEach(item => {
+    item.addEventListener('click', () => {
+      accountMenu.classList.remove('open');
+    });
+  });
+
+  // ===== Modaalaknad =====
+  const ACCOUNT = {
+    name: 'Andre Arus',
+    email: 'arus.andre1@gmail.com',
+    phone: '+372 5689 6713',
+    accountNumber: 'EE65 2200 2210 2161 6689'
+  };
+  const AVAILABLE_BALANCE = 75432;
+
+  const modalOverlay = document.getElementById('modalOverlay');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalContent = document.getElementById('modalContent');
+  const modalClose = document.getElementById('modalClose');
+
+  function closeModal(){
+    modalOverlay.classList.remove('open');
+    modalContent.innerHTML = '';
+  }
+  modalClose.addEventListener('click', closeModal);
+  modalOverlay.addEventListener('click', (e) => {
+    if(e.target === modalOverlay) closeModal();
+  });
+
+  function fmtEUR(n){
+    return '€' + n.toLocaleString('et-EE', {minimumFractionDigits:2, maximumFractionDigits:2});
+  }
+
+  function openManageModal(){
+    const t = translations[currentLang];
+    modalTitle.textContent = t.modal_manage_title;
+    modalContent.innerHTML = `
+      <div class="info-row"><span class="info-label">${t.field_name}</span><span class="info-value">${ACCOUNT.name}</span></div>
+      <div class="info-row"><span class="info-label">${t.field_email}</span><span class="info-value">${ACCOUNT.email}</span></div>
+      <div class="info-row"><span class="info-label">${t.field_phone}</span><span class="info-value">${ACCOUNT.phone}</span></div>
+      <div class="info-row"><span class="info-label">${t.field_account}</span><span class="info-value">${ACCOUNT.accountNumber}</span></div>
+      <div class="info-row"><span class="info-label">${t.field_status}</span><span class="status-chip">✓ ${t.status_verified}</span></div>
+      <button class="modal-btn secondary" id="manageCloseBtn" style="margin-top:16px;">${t.btn_close}</button>
+    `;
+    document.getElementById('manageCloseBtn').addEventListener('click', closeModal);
+    modalOverlay.classList.add('open');
+  }
+
+  function openSettingsModal(){
+    const t = translations[currentLang];
+    modalTitle.textContent = t.modal_settings_title;
+    modalContent.innerHTML = `
+      <div class="toggle-row">
+        <span>${t.setting_notifications}</span>
+        <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <span>${t.setting_push}</span>
+        <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <span>${t.setting_2fa}</span>
+        <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <span>${t.setting_currency}</span>
+        <select class="settings-select">
+          <option>EUR</option>
+          <option>USD</option>
+          <option>GBP</option>
+        </select>
+      </div>
+      <button class="modal-btn" id="settingsSaveBtn">${t.settings_save}</button>
+    `;
+    document.getElementById('settingsSaveBtn').addEventListener('click', closeModal);
+    modalOverlay.classList.add('open');
+  }
+
+  function openWithdrawModal(){
+    const t = translations[currentLang];
+    modalTitle.textContent = t.modal_withdraw_title;
+    modalContent.innerHTML = `
+      <div class="info-row" style="margin-bottom:8px;">
+        <span class="info-label">${t.withdraw_available}</span>
+        <span class="info-value">${fmtEUR(AVAILABLE_BALANCE)}</span>
+      </div>
+      <div class="field-block">
+        <label>${t.withdraw_amount_label}</label>
+        <input type="number" id="withdrawAmount" min="${AVAILABLE_BALANCE}" step="0.01" placeholder="${fmtEUR(AVAILABLE_BALANCE)}">
+      </div>
+      <div class="field-block">
+        <label>${t.withdraw_account_label}</label>
+        <input type="text" id="withdrawIban" value="${ACCOUNT.accountNumber}">
+      </div>
+      <div class="field-hint" id="withdrawError" style="display:none; color:var(--error); margin-bottom:10px;"></div>
+      <button class="modal-btn" id="withdrawSubmitBtn">${t.withdraw_submit}</button>
+    `;
+    document.getElementById('withdrawSubmitBtn').addEventListener('click', () => {
+      const amountInput = document.getElementById('withdrawAmount');
+      const errorEl = document.getElementById('withdrawError');
+      const amount = parseFloat(amountInput.value);
+      const isExactMatch = Math.abs(amount - AVAILABLE_BALANCE) < 0.01;
+      if(!amount || !isExactMatch){
+        const t3 = translations[currentLang];
+        errorEl.textContent = t3.withdraw_error.replace('{amount}', fmtEUR(AVAILABLE_BALANCE));
+        errorEl.style.display = 'block';
+        return;
+      }
+      const t2 = translations[currentLang];
+      modalTitle.textContent = t2.modal_withdraw_title;
+      modalContent.innerHTML = `
+        <div class="success-box">
+          <div class="success-icon">✓</div>
+          <div class="success-title">${t2.withdraw_success_title}</div>
+          <div class="success-text">${t2.withdraw_success_text}</div>
+          <button class="modal-btn" id="withdrawDoneBtn">${t2.btn_close}</button>
+        </div>
+      `;
+      document.getElementById('withdrawDoneBtn').addEventListener('click', closeModal);
+    });
+    modalOverlay.classList.add('open');
+  }
+
+  function openLogoutModal(){
+    const t = translations[currentLang];
+    modalTitle.textContent = t.logout_title;
+    modalContent.innerHTML = `
+      <div class="field-hint" style="margin-bottom:18px; font-size:13px; color:var(--text-dim);">${t.logout_text}</div>
+      <div class="btn-row">
+        <button class="modal-btn secondary" id="logoutCancelBtn">${t.logout_cancel}</button>
+        <button class="modal-btn danger" id="logoutConfirmBtn">${t.logout_confirm}</button>
+      </div>
+    `;
+    document.getElementById('logoutCancelBtn').addEventListener('click', closeModal);
+    document.getElementById('logoutConfirmBtn').addEventListener('click', () => {
+      window.location.href = 'index.html';
+    });
+    modalOverlay.classList.add('open');
+  }
+
+  function openDepositModal(){
+    const t = translations[currentLang];
+    modalTitle.textContent = t.modal_deposit_title;
+    modalContent.innerHTML = `
+      <div class="field-block">
+        <label>${t.deposit_amount_label}</label>
+        <input type="number" id="depositAmount" min="1" step="0.01" placeholder="0,00">
+      </div>
+      <div class="field-block">
+        <label>${t.deposit_method_label}</label>
+        <div class="quick-amount-row">
+          <button class="quick-amount-btn payment-card-btn active" data-method="visa">
+            <span class="card-icon visa-icon">VISA</span>
+          </button>
+          <button class="quick-amount-btn payment-card-btn" data-method="mastercard">
+            <span class="mc-icon"><span class="mc-circle mc-red"></span><span class="mc-circle mc-orange"></span></span>
+            Mastercard
+          </button>
+        </div>
+      </div>
+      <div class="field-block">
+        <label>${t.deposit_card_number_label}</label>
+        <input type="text" id="depositCardNumber" inputmode="numeric" maxlength="19" placeholder="4111 1111 1111 1111">
+      </div>
+      <div class="two-col-row">
+        <div class="field-block" style="flex:1;">
+          <label>${t.deposit_card_expiry_label}</label>
+          <input type="text" id="depositCardExpiry" maxlength="5" placeholder="MM/AA">
+        </div>
+        <div class="field-block" style="flex:1;">
+          <label>${t.deposit_card_cvv_label}</label>
+          <input type="text" id="depositCardCvv" inputmode="numeric" maxlength="4" placeholder="•••">
+        </div>
+      </div>
+      <div class="field-hint" id="depositError" style="display:none; color:var(--error); margin-bottom:10px;"></div>
+      <button class="modal-btn" id="depositConfirmBtn">${t.deposit_confirm_btn}</button>
+    `;
+    modalContent.querySelectorAll('[data-method]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        modalContent.querySelectorAll('[data-method]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
+    const cardNumberInput = document.getElementById('depositCardNumber');
+    cardNumberInput.addEventListener('input', () => {
+      let digits = cardNumberInput.value.replace(/\D/g, '').slice(0, 16);
+      cardNumberInput.value = digits.replace(/(.{4})/g, '$1 ').trim();
+    });
+    const cardExpiryInput = document.getElementById('depositCardExpiry');
+    cardExpiryInput.addEventListener('input', () => {
+      let digits = cardExpiryInput.value.replace(/\D/g, '').slice(0, 4);
+      if(digits.length >= 3){ digits = digits.slice(0,2) + '/' + digits.slice(2); }
+      cardExpiryInput.value = digits;
+    });
+    const cardCvvInput = document.getElementById('depositCardCvv');
+    cardCvvInput.addEventListener('input', () => {
+      cardCvvInput.value = cardCvvInput.value.replace(/\D/g, '').slice(0, 4);
+    });
+
+    document.getElementById('depositConfirmBtn').addEventListener('click', () => {
+      const amountInput = document.getElementById('depositAmount');
+      const errorEl = document.getElementById('depositError');
+      const amount = parseFloat(amountInput.value);
+      const cardDigits = cardNumberInput.value.replace(/\s/g, '');
+      const expiryVal = cardExpiryInput.value;
+      const cvvVal = cardCvvInput.value;
+      const t3 = translations[currentLang];
+
+      if(!amount || amount < 1){
+        errorEl.textContent = t3.deposit_error.replace('{min}', fmtEUR(1));
+        errorEl.style.display = 'block';
+        return;
+      }
+      if(cardDigits.length < 13 || !/^\d{2}\/\d{2}$/.test(expiryVal) || cvvVal.length < 3){
+        errorEl.textContent = t3.deposit_card_error;
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      const t2 = translations[currentLang];
+      modalTitle.textContent = t2.modal_deposit_title;
+      modalContent.innerHTML = `
+        <div class="success-box">
+          <div class="success-icon">✓</div>
+          <div class="success-title">${t2.deposit_success_title}</div>
+          <div class="success-text">${t2.deposit_success_text.replace('{amount}', fmtEUR(amount))}</div>
+          <button class="modal-btn" id="depositDoneBtn">${t2.btn_close}</button>
+        </div>
+      `;
+      document.getElementById('depositDoneBtn').addEventListener('click', closeModal);
+    });
+    modalOverlay.classList.add('open');
+  }
+
+  document.querySelectorAll('[data-action]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const action = btn.getAttribute('data-action');
+      if(action === 'manage') openManageModal();
+      else if(action === 'settings') openSettingsModal();
+      else if(action === 'deposit') openDepositModal();
+      else if(action === 'withdraw') openWithdrawModal();
+      else if(action === 'logout') openLogoutModal();
+    });
+  });
+
+  // ===== Teised fondid =====
+  const OTHER_FUNDS = [
+    { ticker: 'NDX', name: 'Nasdaq-100 Index Fund', ret: 18.4 },
+    { ticker: 'MWD', name: 'MSCI World Index Fund', ret: 9.6 },
+    { ticker: 'EEM', name: 'Emerging Markets Fund', ret: 4.1 },
+    { ticker: 'STX', name: 'Euro Stoxx 600 Fund', ret: 6.3 },
+    { ticker: 'BND', name: 'Global Bond Fund', ret: -1.8 },
+    { ticker: 'GLD', name: 'Gold ETF', ret: 21.7 },
+    { ticker: 'REIT', name: 'Real Estate REIT Fund', ret: 3.2 }
+  ];
+
+  function fmtPct(n){
+    const sign = n >= 0 ? '+' : '';
+    return sign + n.toFixed(1).replace('.', ',') + ' %';
+  }
+
+  function openFundsModal(){
+    const t = translations[currentLang];
+    modalTitle.textContent = t.modal_funds_title;
+    const rows = OTHER_FUNDS.map((f, i) => `
+      <div class="fund-row">
+        <div class="fund-left">
+          <div class="fund-icon">${f.ticker}</div>
+          <div style="min-width:0;">
+            <div class="fund-name">${f.name}</div>
+            <div class="fund-return ${f.ret >= 0 ? 'pos' : 'neg'}">${fmtPct(f.ret)}</div>
+          </div>
+        </div>
+        <button class="fund-select-btn" data-fund-index="${i}">${t.fund_select_btn}</button>
+      </div>
+    `).join('');
+    modalContent.innerHTML = rows;
+    modalContent.querySelectorAll('.fund-select-btn').forEach(btn => {
+      btn.addEventListener('click', () => openTransferModal(OTHER_FUNDS[parseInt(btn.getAttribute('data-fund-index'), 10)]));
+    });
+    modalOverlay.classList.add('open');
+  }
+
+  function openTransferModal(fund){
+    const t = translations[currentLang];
+    modalTitle.textContent = fund.name;
+    modalContent.innerHTML = `
+      <button class="back-link" id="transferBackBtn">← ${t.transfer_back}</button>
+      <div class="field-block">
+        <label>${t.transfer_amount_label}</label>
+        <input type="number" id="transferAmount" min="1" max="${AVAILABLE_BALANCE}" step="0.01" placeholder="0,00">
+      </div>
+      <div class="quick-amount-row">
+        <button class="quick-amount-btn" data-pct="25">25%</button>
+        <button class="quick-amount-btn" data-pct="50">50%</button>
+        <button class="quick-amount-btn" data-pct="100">${t.transfer_all_label}</button>
+      </div>
+      <div class="field-hint" id="transferError" style="display:none; color:var(--error); margin-bottom:10px;"></div>
+      <button class="modal-btn" id="transferConfirmBtn">${t.transfer_confirm_btn}</button>
+    `;
+    document.getElementById('transferBackBtn').addEventListener('click', openFundsModal);
+    const amountInput = document.getElementById('transferAmount');
+    modalContent.querySelectorAll('.quick-amount-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const pct = parseFloat(btn.getAttribute('data-pct'));
+        amountInput.value = (AVAILABLE_BALANCE * pct / 100).toFixed(2);
+        modalContent.querySelectorAll('.quick-amount-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+    document.getElementById('transferConfirmBtn').addEventListener('click', () => {
+      const errorEl = document.getElementById('transferError');
+      const amount = parseFloat(amountInput.value);
+      if(!amount || amount < 1 || amount > AVAILABLE_BALANCE){
+        const t3 = translations[currentLang];
+        errorEl.textContent = t3.transfer_error.replace('{min}', fmtEUR(1)).replace('{max}', fmtEUR(AVAILABLE_BALANCE));
+        errorEl.style.display = 'block';
+        return;
+      }
+      const t2 = translations[currentLang];
+      modalTitle.textContent = t2.modal_funds_title;
+      modalContent.innerHTML = `
+        <div class="success-box">
+          <div class="success-icon">✓</div>
+          <div class="success-title">${t2.transfer_success_title}</div>
+          <div class="success-text">${t2.transfer_success_text.replace('{amount}', fmtEUR(amount)).replace('{fund}', fund.name)}</div>
+          <button class="modal-btn" id="transferDoneBtn">${t2.btn_close}</button>
+        </div>
+      `;
+      document.getElementById('transferDoneBtn').addEventListener('click', closeModal);
+    });
+    modalOverlay.classList.add('open');
+  }
+
+  document.getElementById('otherFundsBtn').addEventListener('click', openFundsModal);
+
+  // ===== Footeri infosisu =====
+  const FOOTER_TITLE_KEY = {
+    about: 'footer_about_us', careers: 'footer_careers', press: 'footer_press', contact: 'footer_contact',
+    help: 'footer_help_center', faq: 'footer_faq', security: 'footer_security',
+    terms: 'footer_terms', privacy: 'footer_privacy', risk: 'footer_risk'
+  };
+
+  const FOOTER_CONTENT_ET = {
+    about: `
+      <p>Investo sündis lihtsast mõttest: investeerimine ei pea olema keeruline ega hirmutav. Alustasime väikese meeskonnana, kes uskus, et igaühel peaks olema ligipääs samadele tööriistadele, mida kasutavad professionaalsed investorid.</p>
+      <p>Täna aitame kasutajatel jälgida oma portfelli, mõista turgude liikumist ja teha teadlikke otsuseid – ilma keerulise finantsžargoonita.</p>`,
+    careers: `
+      <h4>Miks Investoga liituda?</h4>
+      <p>Oleme kiiresti kasvav meeskond, kes usub, et hea toode sünnib hoolivast tiimist. Pakume paindlikku töökorraldust ja võimalust päriselt mõjutada, kuidas inimesed oma raha juhivad.</p>
+      <h4>Avatud ametikohad</h4>
+      <ul>
+        <li>Frontend arendaja (kaugtöö)</li>
+        <li>Kliendituleeni spetsialist</li>
+        <li>Turundusjuht</li>
+      </ul>
+      <p>Huvitatud? Saada oma CV aadressile <span class="info-contact-line">karjaar@investo.ee</span></p>`,
+    press: `
+      <h4>Investo laiendab fondivalikut</h4>
+      <p>Lisasime platvormile mitmeid uusi rahvusvahelisi indeksifonde, sh Nasdaq-100 ja MSCI World.</p>
+      <h4>Uus mobiilirakendus tulekul</h4>
+      <p>Töötame parasjagu mobiilirakenduse kallal, mis toob portfelli jälgimise otse sinu taskusse.</p>
+      <h4>Meediakontakt</h4>
+      <p class="info-contact-line">press@investo.ee</p>`,
+    contact: `
+      <p>Meiega saab ühendust võtta alloleval viisil – vastame tavaliselt 1 tööpäeva jooksul.</p>
+      <p class="info-contact-line">✉ tugi@investo.ee</p>
+      <p class="info-contact-line">☎ +372 600 1234</p>
+      <p class="info-contact-line">📍 Tornimäe 5, 10145 Tallinn, Eesti</p>
+      <p>Klienditugi on avatud E–R kell 9–18.</p>`,
+    help: `
+      <h4>Kuidas alustada?</h4>
+      <p>Logi sisse oma kontole, lisa raha ja vali fond, millesse soovid investeerida. Kogu protsess võtab vähem kui 5 minutit.</p>
+      <h4>Populaarsed teemad</h4>
+      <ul>
+        <li>Kuidas lisada raha kontole?</li>
+        <li>Kuidas fondi vahetada?</li>
+        <li>Kuidas raha välja võtta?</li>
+        <li>Konto turvalisuse seadistamine</li>
+      </ul>
+      <p>Ei leidnud vastust? Kirjuta meile aadressile <span class="info-contact-line">tugi@investo.ee</span></p>`,
+    faq: `
+      <h4>Kas minu raha on kaitstud?</h4>
+      <p>Kõik hoiused hoitakse eraldi kliendikontodel, mis on eraldatud ettevõtte enda vahenditest.</p>
+      <h4>Kui kiiresti jõuab väljamakse kohale?</h4>
+      <p>Tavaliselt 1–3 tööpäeva jooksul, olenevalt sinu pangast.</p>
+      <h4>Kas saan investeerida mitmesse fondi korraga?</h4>
+      <p>Praegu toetab demo üht aktiivset fondi korraga, kuid täisversioonis saab hajutada portfelli mitme fondi vahel.</p>`,
+    security: `
+      <p>Investo kasutab tööstusstandardit järgivat krüpteeringut kõikide andmete edastamiseks ja hoidmiseks.</p>
+      <ul>
+        <li>Kaheastmeline autentimine (2FA)</li>
+        <li>Krüpteeritud andmeside (TLS)</li>
+        <li>Regulaarsed turvaauditid</li>
+        <li>Ööpäevaringne pettuste jälgimine</li>
+      </ul>
+      <p>Kahtlustad turvaintsidenti? Kirjuta <span class="info-contact-line">turvalisus@investo.ee</span></p>`,
+    terms: `
+      <p>Kasutades Investo platvormi, nõustud järgnevaga:</p>
+      <ul>
+        <li>Konto on isiklik ja mittevõõrandatav.</li>
+        <li>Vastutad oma konto andmete konfidentsiaalsuse eest.</li>
+        <li>Investo jätab endale õiguse teenust igal ajal muuta või lõpetada.</li>
+        <li>Kõik tehingud toimuvad kehtivate turuhindade alusel.</li>
+      </ul>
+      <p>See on lühikokkuvõte demo eesmärgil ega kujuta endast täielikke õiguslikult siduvaid tingimusi.</p>`,
+    privacy: `
+      <p>Kogume ainult andmeid, mis on vajalikud teenuse osutamiseks: nimi, e-post, kontoandmed ja tehingute ajalugu.</p>
+      <p>Me ei müü sinu andmeid kolmandatele osapooltele. Andmeid jagatakse ainult juhul, kui see on seadusega nõutud.</p>
+      <p>Sul on igal ajal õigus taotleda oma andmete väljavõtet või kustutamist, kirjutades <span class="info-contact-line">privaatsus@investo.ee</span></p>`,
+    risk: `
+      <p>Investeerimisega kaasneb alati risk, sealhulgas võimalus kaotada osa või kogu investeeritud kapital.</p>
+      <p>Minevikus saavutatud tootlus ei taga ega ennusta tulevasi tulemusi. Fondide väärtus võib nii tõusta kui langeda vastavalt turutingimustele.</p>
+      <p>Enne investeerimisotsuse tegemist kaalu oma finantsolukorda ja vajadusel konsulteeri sõltumatu finantsnõustajaga.</p>`
+  };
+
+  function openFooterModal(key){
+    const t = translations[currentLang];
+    modalTitle.textContent = t[FOOTER_TITLE_KEY[key]] || '';
+    if(currentLang === 'et'){
+      modalContent.innerHTML = `<div class="info-modal-content">${FOOTER_CONTENT_ET[key]}</div>`;
+    } else {
+      modalContent.innerHTML = `<div class="info-modal-content"><p>${t.footer_content_fallback}</p></div>`;
+    }
+    modalOverlay.classList.add('open');
+  }
+
+  document.querySelectorAll('.footer-link').forEach(btn => {
+    btn.addEventListener('click', () => openFooterModal(btn.getAttribute('data-footer')));
+  });
+</script>
+</body>
+</html>

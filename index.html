@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Investo — Invest simply</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0B0E12;
+    --surface: #12161C;
+    --surface-2: #171C23;
+    --border: #232A33;
+    --text: #EDEFF2;
+    --text-dim: #8A93A0;
+    --text-faint: #5B636F;
+    --gain: #3ECF8E;
+    --gain-dim: rgba(62,207,142,0.12);
+    --gold: #E8B84B;
+  }
+  *{ box-sizing: border-box; margin:0; padding:0; }
+  html{ scroll-behavior: smooth; }
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    line-height: 1.5;
+  }
+  a{ color: inherit; }
+  .wrap{ max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+  /* ===== Top nav ===== */
+  .topnav{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 26px 0;
+  }
+  .brand{ font-size: 18px; font-weight: 700; color: var(--text-dim); }
+  .brand span{ color: var(--text); }
+  .nav-login-btn{
+    background: var(--gold);
+    color: #1A1200;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .nav-login-btn:hover{ background: #F0C562; }
+
+  .nav-right{ display:flex; align-items:center; gap: 10px; }
+  .lang-menu{ position: relative; }
+  .lang-btn{
+    display:flex;
+    align-items:center;
+    gap: 7px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 8px 12px;
+    cursor: pointer;
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+  }
+  .lang-btn:hover{ border-color: #333B45; }
+  .lang-menu.open .chevron{ transform: rotate(180deg); }
+  .lang-dropdown{
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 150px;
+    max-height: 280px;
+    overflow-y: auto;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 6px;
+    display: none;
+    flex-direction: column;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.45);
+    z-index: 10;
+  }
+  .lang-menu.open .lang-dropdown{ display: flex; }
+  .lang-item{
+    display:flex;
+    align-items:center;
+    gap: 9px;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: left;
+  }
+  .lang-item:hover{ background: rgba(255,255,255,0.05); }
+  .lang-item.active{ color: var(--gold); }
+
+  /* ===== Hero ===== */
+  .hero{
+    padding: 64px 0 56px;
+  }
+  .hero h1{
+    font-size: 46px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    line-height: 1.12;
+    max-width: 620px;
+    margin-bottom: 20px;
+  }
+  .hero p{
+    font-size: 17px;
+    color: var(--text-dim);
+    max-width: 480px;
+    margin-bottom: 30px;
+  }
+  .hero-ctas{ display: flex; align-items: center; gap: 18px; flex-wrap: wrap; margin-bottom: 28px; }
+  .btn-primary{
+    background: var(--gold);
+    color: #1A1200;
+    border: none;
+    border-radius: 8px;
+    padding: 13px 26px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-primary:hover{ background: #F0C562; }
+  .btn-secondary{
+    color: var(--text-dim);
+    font-size: 14px;
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 2px;
+  }
+  .btn-secondary:hover{ color: var(--text); border-color: var(--text-dim); }
+  .hero-stat{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--text-faint);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 7px 16px;
+  }
+  .hero-stat b{ color: var(--gain); font-weight: 600; }
+
+  /* ===== Sections ===== */
+  section{ padding: 52px 0; border-top: 1px solid var(--border); }
+  .section-head{ margin-bottom: 32px; max-width: 480px; }
+  .section-head h2{ font-size: 26px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 10px; }
+  .section-head p{ color: var(--text-dim); font-size: 14px; }
+
+  /* how it works */
+  .steps{ display: flex; flex-direction: column; gap: 0; max-width: 560px; }
+  .step-row{
+    display: flex;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .step-row:last-child{ border-bottom: none; }
+  .step-num{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 20px;
+    color: var(--gold);
+    flex-shrink: 0;
+    width: 28px;
+  }
+  .step-body h3{ font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .step-body p{ font-size: 13px; color: var(--text-faint); }
+
+  /* funds */
+  .fund-row{
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    max-width: 620px;
+  }
+  .fund-row:last-child{ border-bottom: none; }
+  .fund-left{ display:flex; align-items:center; gap: 14px; }
+  .fund-icon{
+    width: 36px; height: 36px;
+    border-radius: 9px;
+    background: linear-gradient(135deg,#1D2733,#0F151C);
+    border: 1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--gold);
+  }
+  .fund-name{ font-size: 14px; font-weight: 600; }
+  .fund-return{ font-family:'IBM Plex Mono', monospace; font-size: 14px; }
+  .fund-return.pos{ color: var(--gain); }
+
+  /* security */
+  .security-text{ max-width: 560px; color: var(--text-dim); font-size: 14px; line-height: 1.7; }
+  .security-list{ margin-top: 18px; display: flex; flex-direction: column; gap: 10px; }
+  .security-list li{ list-style: none; font-size: 13px; color: var(--text-faint); display:flex; gap: 10px; }
+  .security-list li::before{ content: '—'; color: var(--gold); }
+
+  /* footer */
+  .site-footer{ padding: 44px 0 30px; }
+  .footer-inner{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 32px;
+    padding-bottom: 26px;
+    border-bottom: 1px solid var(--border);
+  }
+  .footer-brand-col{ flex: 1 1 200px; max-width: 260px; }
+  .footer-desc{ font-size: 12px; color: var(--text-faint); line-height: 1.55; margin-top: 8px; }
+  .footer-nav{ display: flex; flex-wrap: wrap; gap: 40px; flex: 2 1 420px; }
+  .footer-col{ display:flex; flex-direction:column; flex: 1 1 130px; min-width: 130px; }
+  .footer-col-head{ font-size: 12px; font-weight: 600; color: var(--text-dim); margin-bottom: 12px; }
+  .footer-col span{ font-size: 12px; color: var(--text-faint); margin-bottom: 10px; }
+  .footer-bottom{ padding-top: 20px; }
+  .footer-risk-text{ font-size: 11px; color: var(--text-faint); line-height: 1.6; margin-bottom: 10px; max-width: 640px; }
+  .footer-copyright{ font-size: 11px; color: var(--text-faint); }
+
+  @media (max-width: 640px){
+    .hero h1{ font-size: 32px; }
+    .footer-inner{ flex-direction: column; }
+    .footer-nav{ flex-direction: column; gap: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="topnav">
+    <div class="brand"><span>In</span>vesto</div>
+    <div class="nav-right">
+      <div class="lang-menu" id="langMenu">
+        <button class="lang-btn" id="langBtn">
+          <span id="langFlag">🇬🇧</span>
+          <span id="langCode">ENG</span>
+          <svg class="chevron" width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1L5 5L9 1" stroke="#8A93A0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="lang-dropdown" id="langDropdown"></div>
+      </div>
+      <a class="nav-login-btn" href="login.html" data-i18n="nav_login">Log in</a>
+    </div>
+  </div>
+
+  <div class="hero">
+    <h1 data-i18n="hero_title">Put your money to work, without the guesswork.</h1>
+    <p data-i18n="hero_subtitle">Track a real portfolio, explore popular index funds, and move money in seconds — built for people who want to invest, not decode spreadsheets.</p>
+    <div class="hero-ctas">
+      <a class="btn-primary" href="login.html" data-i18n="hero_cta_primary">Log in to your account</a>
+      <a class="btn-secondary" href="#how-it-works" data-i18n="hero_cta_secondary">See how it works</a>
+    </div>
+    <div class="hero-stat"><b>+7.00%</b> <span data-i18n="hero_stat">average fund return this year</span></div>
+  </div>
+</div>
+
+<section id="how-it-works">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 data-i18n="how_title">Three steps to your first investment</h2>
+      <p data-i18n="how_sub">No paperwork, no branch visits. Everything happens right in your account.</p>
+    </div>
+    <div class="steps">
+      <div class="step-row">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3 data-i18n="step1_title">Log in to your account</h3>
+          <p data-i18n="step1_desc">Access your dashboard from any device, any time.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3 data-i18n="step2_title">Add funds with your card</h3>
+          <p data-i18n="step2_desc">Deposits are ready to invest within minutes.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3 data-i18n="step3_title">Choose a fund and grow your money</h3>
+          <p data-i18n="step3_desc">Pick from popular index funds and track performance in real time.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <h2 data-i18n="funds_title">Popular funds right now</h2>
+      <p data-i18n="funds_sub">A sample of what people are investing in this month.</p>
+    </div>
+    <div class="fund-row">
+      <div class="fund-left">
+        <div class="fund-icon">SPX</div>
+        <div class="fund-name">S&amp;P 500 Index Fund</div>
+      </div>
+      <div class="fund-return pos">+7.0%</div>
+    </div>
+    <div class="fund-row">
+      <div class="fund-left">
+        <div class="fund-icon">NDX</div>
+        <div class="fund-name">Nasdaq-100 Index Fund</div>
+      </div>
+      <div class="fund-return pos">+18.4%</div>
+    </div>
+    <div class="fund-row">
+      <div class="fund-left">
+        <div class="fund-icon">MWD</div>
+        <div class="fund-name">MSCI World Index Fund</div>
+      </div>
+      <div class="fund-return pos">+9.6%</div>
+    </div>
+    <div class="fund-row">
+      <div class="fund-left">
+        <div class="fund-icon">GLD</div>
+        <div class="fund-name">Gold ETF</div>
+      </div>
+      <div class="fund-return pos">+21.7%</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <h2 data-i18n="security_title">Built with security in mind</h2>
+    </div>
+    <p class="security-text" data-i18n="security_text">Your account and card details are protected the same way banks protect theirs. We never sell your data, and every session is encrypted end to end.</p>
+    <ul class="security-list">
+      <li data-i18n="security_li1">Two-factor authentication on every login</li>
+      <li data-i18n="security_li2">Encrypted data transfer (TLS) across the whole platform</li>
+      <li data-i18n="security_li3">Client funds held separately from company funds</li>
+      <li data-i18n="security_li4">Round-the-clock fraud monitoring</li>
+    </ul>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-inner">
+      <div class="footer-brand-col">
+        <div class="brand"><span>In</span>vesto</div>
+        <div class="footer-desc" data-i18n="footer_desc">Invest simply and securely in the world's most popular funds.</div>
+      </div>
+      <div class="footer-nav">
+        <div class="footer-col">
+          <div class="footer-col-head" data-i18n="footer_company_head">Company</div>
+          <span data-i18n="footer_about_us">About us</span>
+          <span data-i18n="footer_careers">Careers</span>
+          <span data-i18n="footer_press">Press</span>
+          <span data-i18n="footer_contact">Contact</span>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-head" data-i18n="footer_support_head">Support</div>
+          <span data-i18n="footer_help_center">Help center</span>
+          <span data-i18n="footer_faq">FAQ</span>
+          <span data-i18n="footer_security">Security</span>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-head" data-i18n="footer_legal_head">Legal</div>
+          <span data-i18n="footer_terms">Terms of service</span>
+          <span data-i18n="footer_privacy">Privacy policy</span>
+          <span data-i18n="footer_risk">Risk disclosure</span>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-risk-text" data-i18n="footer_risk_disclaimer">Investing involves risk, including the possible loss of capital. Past performance does not guarantee future results.</div>
+      <div class="footer-copyright" data-i18n="footer_copyright">© 2026 Investo. All rights reserved.</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const translations = {
+    et: {
+      nav_login: "Logi sisse",
+      hero_title: "Pane oma raha tööle, ilma oletamiseta.",
+      hero_subtitle: "Jälgi oma portfelli, avasta populaarseid indeksifonde ja liiguta raha sekunditega — loodud inimestele, kes tahavad investeerida, mitte tabeleid lahti mõtestada.",
+      hero_cta_primary: "Logi oma kontole",
+      hero_cta_secondary: "Vaata, kuidas see töötab",
+      hero_stat: "keskmine fondi tootlus sel aastal",
+      how_title: "Kolm sammu esimese investeeringuni",
+      how_sub: "Ei paberimajandust ega kontorikülastusi. Kõik toimub otse sinu kontol.",
+      step1_title: "Logi oma kontole",
+      step1_desc: "Pääse oma töölauale ligi mistahes seadmest, mistahes ajal.",
+      step2_title: "Lisa raha kaardiga",
+      step2_desc: "Sissemaksed on investeerimiseks valmis mõne minutiga.",
+      step3_title: "Vali fond ja kasvata oma raha",
+      step3_desc: "Vali populaarsete indeksifondide seast ja jälgi tootlust reaalajas.",
+      funds_title: "Populaarsed fondid praegu",
+      funds_sub: "Näide sellest, kuhu inimesed sel kuul investeerivad.",
+      security_title: "Ehitatud turvalisust silmas pidades",
+      security_text: "Sinu konto ja kaardiandmed on kaitstud samamoodi, nagu pangad kaitsevad omi. Me ei müü sinu andmeid kunagi ja iga seanss on täielikult krüpteeritud.",
+      security_li1: "Kaheastmeline autentimine igal sisselogimisel",
+      security_li2: "Krüpteeritud andmeside (TLS) kogu platvormil",
+      security_li3: "Kliendi raha hoitakse ettevõtte vahenditest eraldi",
+      security_li4: "Ööpäevaringne pettuste jälgimine",
+      footer_desc: "Investeeri lihtsalt ja turvaliselt maailma populaarseimatesse fondidesse.",
+      footer_company_head: "Ettevõte", footer_about_us: "Meist", footer_careers: "Karjäär", footer_press: "Uudised", footer_contact: "Kontakt",
+      footer_support_head: "Tugi", footer_help_center: "Abikeskus", footer_faq: "KKK", footer_security: "Turvalisus",
+      footer_legal_head: "Õiguslik", footer_terms: "Kasutustingimused", footer_privacy: "Privaatsuspoliitika", footer_risk: "Riskihoiatus",
+      footer_risk_disclaimer: "Investeerimisega kaasneb risk, sealhulgas kapitali kaotamise võimalus. Minevikutootlus ei taga tulevikutulemusi.",
+      footer_copyright: "© 2026 Investo. Kõik õigused kaitstud."
+    },
+    en: {
+      nav_login: "Log in",
+      hero_title: "Put your money to work, without the guesswork.",
+      hero_subtitle: "Track a real portfolio, explore popular index funds, and move money in seconds — built for people who want to invest, not decode spreadsheets.",
+      hero_cta_primary: "Log in to your account",
+      hero_cta_secondary: "See how it works",
+      hero_stat: "average fund return this year",
+      how_title: "Three steps to your first investment",
+      how_sub: "No paperwork, no branch visits. Everything happens right in your account.",
+      step1_title: "Log in to your account",
+      step1_desc: "Access your dashboard from any device, any time.",
+      step2_title: "Add funds with your card",
+      step2_desc: "Deposits are ready to invest within minutes.",
+      step3_title: "Choose a fund and grow your money",
+      step3_desc: "Pick from popular index funds and track performance in real time.",
+      funds_title: "Popular funds right now",
+      funds_sub: "A sample of what people are investing in this month.",
+      security_title: "Built with security in mind",
+      security_text: "Your account and card details are protected the same way banks protect theirs. We never sell your data, and every session is encrypted end to end.",
+      security_li1: "Two-factor authentication on every login",
+      security_li2: "Encrypted data transfer (TLS) across the whole platform",
+      security_li3: "Client funds held separately from company funds",
+      security_li4: "Round-the-clock fraud monitoring",
+      footer_desc: "Invest simply and securely in the world's most popular funds.",
+      footer_company_head: "Company", footer_about_us: "About us", footer_careers: "Careers", footer_press: "Press", footer_contact: "Contact",
+      footer_support_head: "Support", footer_help_center: "Help center", footer_faq: "FAQ", footer_security: "Security",
+      footer_legal_head: "Legal", footer_terms: "Terms of service", footer_privacy: "Privacy policy", footer_risk: "Risk disclosure",
+      footer_risk_disclaimer: "Investing involves risk, including the possible loss of capital. Past performance does not guarantee future results.",
+      footer_copyright: "© 2026 Investo. All rights reserved."
+    },
+    ru: {
+      nav_login: "Войти",
+      hero_title: "Заставьте свои деньги работать — без догадок.",
+      hero_subtitle: "Отслеживайте портфель, изучайте популярные индексные фонды и переводите деньги за секунды — для тех, кто хочет инвестировать, а не разбираться в таблицах.",
+      hero_cta_primary: "Войти в аккаунт",
+      hero_cta_secondary: "Посмотреть, как это работает",
+      hero_stat: "средняя доходность фондов в этом году",
+      how_title: "Три шага к первой инвестиции",
+      how_sub: "Никакой бумажной волокиты и визитов в офис. Всё происходит прямо в вашем аккаунте.",
+      step1_title: "Войдите в аккаунт",
+      step1_desc: "Доступ к панели управления с любого устройства в любое время.",
+      step2_title: "Пополните счёт картой",
+      step2_desc: "Депозиты готовы к инвестированию за считанные минуты.",
+      step3_title: "Выберите фонд и приумножайте деньги",
+      step3_desc: "Выбирайте среди популярных индексных фондов и следите за доходностью в реальном времени.",
+      funds_title: "Популярные фонды сейчас",
+      funds_sub: "Пример того, во что инвестируют в этом месяце.",
+      security_title: "Создано с учётом безопасности",
+      security_text: "Данные вашего счёта и карты защищены так же, как их защищают банки. Мы никогда не продаём ваши данные, и каждая сессия полностью зашифрована.",
+      security_li1: "Двухфакторная аутентификация при каждом входе",
+      security_li2: "Зашифрованная передача данных (TLS) на всей платформе",
+      security_li3: "Средства клиентов хранятся отдельно от средств компании",
+      security_li4: "Круглосуточный мониторинг мошенничества",
+      footer_desc: "Инвестируйте просто и безопасно в самые популярные фонды мира.",
+      footer_company_head: "Компания", footer_about_us: "О нас", footer_careers: "Карьера", footer_press: "Новости", footer_contact: "Контакты",
+      footer_support_head: "Поддержка", footer_help_center: "Центр помощи", footer_faq: "Вопросы и ответы", footer_security: "Безопасность",
+      footer_legal_head: "Правовая информация", footer_terms: "Условия использования", footer_privacy: "Политика конфиденциальности", footer_risk: "Уведомление о рисках",
+      footer_risk_disclaimer: "Инвестирование связано с риском, включая возможную потерю капитала. Доходность в прошлом не гарантирует результаты в будущем.",
+      footer_copyright: "© 2026 Investo. Все права защищены."
+    },
+    fi: {
+      nav_login: "Kirjaudu sisään",
+      hero_title: "Laita rahasi töihin, ilman arvailua.",
+      hero_subtitle: "Seuraa salkkua, tutustu suosittuihin indeksirahastoihin ja siirrä rahaa sekunneissa — tehty niille, jotka haluavat sijoittaa, ei tulkita taulukoita.",
+      hero_cta_primary: "Kirjaudu tilillesi",
+      hero_cta_secondary: "Katso, miten se toimii",
+      hero_stat: "keskimääräinen rahaston tuotto tänä vuonna",
+      how_title: "Kolme askelta ensimmäiseen sijoitukseen",
+      how_sub: "Ei paperitöitä eikä konttorikäyntejä. Kaikki tapahtuu suoraan tililläsi.",
+      step1_title: "Kirjaudu tilillesi",
+      step1_desc: "Pääse hallintapaneeliisi millä tahansa laitteella, milloin tahansa.",
+      step2_title: "Lisää varoja kortilla",
+      step2_desc: "Talletukset ovat sijoitusvalmiita muutamassa minuutissa.",
+      step3_title: "Valitse rahasto ja kasvata rahojasi",
+      step3_desc: "Valitse suosituista indeksirahastoista ja seuraa tuottoa reaaliajassa.",
+      funds_title: "Suositut rahastot juuri nyt",
+      funds_sub: "Esimerkki siitä, mihin ihmiset sijoittavat tässä kuussa.",
+      security_title: "Rakennettu turvallisuus mielessä",
+      security_text: "Tilisi ja korttitietosi on suojattu samalla tavalla kuin pankit suojaavat omansa. Emme koskaan myy tietojasi, ja jokainen istunto on täysin salattu.",
+      security_li1: "Kaksivaiheinen tunnistautuminen jokaisella kirjautumisella",
+      security_li2: "Salattu tiedonsiirto (TLS) koko alustalla",
+      security_li3: "Asiakasvarat pidetään erillään yhtiön varoista",
+      security_li4: "Ympärivuorokautinen petosten valvonta",
+      footer_desc: "Sijoita helposti ja turvallisesti maailman suosituimpiin rahastoihin.",
+      footer_company_head: "Yritys", footer_about_us: "Meistä", footer_careers: "Ura", footer_press: "Uutiset", footer_contact: "Yhteystiedot",
+      footer_support_head: "Tuki", footer_help_center: "Ohjekeskus", footer_faq: "UKK", footer_security: "Turvallisuus",
+      footer_legal_head: "Oikeudellinen", footer_terms: "Käyttöehdot", footer_privacy: "Tietosuojakäytäntö", footer_risk: "Riski-ilmoitus",
+      footer_risk_disclaimer: "Sijoittamiseen liittyy riskejä, mukaan lukien pääoman menettämisen mahdollisuus. Aiempi tuotto ei takaa tulevaa tulosta.",
+      footer_copyright: "© 2026 Investo. Kaikki oikeudet pidätetään."
+    },
+    de: {
+      nav_login: "Anmelden",
+      hero_title: "Lass dein Geld arbeiten – ohne Rätselraten.",
+      hero_subtitle: "Verfolge ein echtes Portfolio, entdecke beliebte Indexfonds und bewege Geld in Sekunden – für alle, die investieren wollen, statt Tabellen zu entschlüsseln.",
+      hero_cta_primary: "In dein Konto einloggen",
+      hero_cta_secondary: "Sehen, wie es funktioniert",
+      hero_stat: "durchschnittliche Fondsrendite in diesem Jahr",
+      how_title: "Drei Schritte zu deiner ersten Investition",
+      how_sub: "Kein Papierkram, keine Filialbesuche. Alles passiert direkt in deinem Konto.",
+      step1_title: "In dein Konto einloggen",
+      step1_desc: "Greife jederzeit von jedem Gerät auf dein Dashboard zu.",
+      step2_title: "Geld per Karte einzahlen",
+      step2_desc: "Einzahlungen sind innerhalb weniger Minuten investitionsbereit.",
+      step3_title: "Fonds wählen und Geld vermehren",
+      step3_desc: "Wähle aus beliebten Indexfonds und verfolge die Wertentwicklung in Echtzeit.",
+      funds_title: "Beliebte Fonds gerade jetzt",
+      funds_sub: "Ein Beispiel dafür, wo Menschen diesen Monat investieren.",
+      security_title: "Mit Sicherheit im Blick entwickelt",
+      security_text: "Deine Konto- und Kartendaten sind genauso geschützt wie bei Banken. Wir verkaufen deine Daten niemals, und jede Sitzung ist vollständig verschlüsselt.",
+      security_li1: "Zwei-Faktor-Authentifizierung bei jeder Anmeldung",
+      security_li2: "Verschlüsselte Datenübertragung (TLS) auf der gesamten Plattform",
+      security_li3: "Kundengelder werden getrennt vom Firmenvermögen gehalten",
+      security_li4: "Rund-um-die-Uhr-Betrugsüberwachung",
+      footer_desc: "Investiere einfach und sicher in die beliebtesten Fonds der Welt.",
+      footer_company_head: "Unternehmen", footer_about_us: "Über uns", footer_careers: "Karriere", footer_press: "Presse", footer_contact: "Kontakt",
+      footer_support_head: "Support", footer_help_center: "Hilfe-Center", footer_faq: "FAQ", footer_security: "Sicherheit",
+      footer_legal_head: "Rechtliches", footer_terms: "Nutzungsbedingungen", footer_privacy: "Datenschutzrichtlinie", footer_risk: "Risikohinweis",
+      footer_risk_disclaimer: "Investieren ist mit Risiken verbunden, einschließlich des möglichen Verlusts des eingesetzten Kapitals. Die Wertentwicklung der Vergangenheit ist kein Indikator für zukünftige Ergebnisse.",
+      footer_copyright: "© 2026 Investo. Alle Rechte vorbehalten."
+    },
+    es: {
+      nav_login: "Iniciar sesión",
+      hero_title: "Pon tu dinero a trabajar, sin adivinar.",
+      hero_subtitle: "Sigue una cartera real, descubre fondos indexados populares y mueve dinero en segundos — pensado para quienes quieren invertir, no descifrar hojas de cálculo.",
+      hero_cta_primary: "Iniciar sesión en tu cuenta",
+      hero_cta_secondary: "Ver cómo funciona",
+      hero_stat: "rentabilidad media de los fondos este año",
+      how_title: "Tres pasos hacia tu primera inversión",
+      how_sub: "Sin papeleo ni visitas a sucursales. Todo ocurre directamente en tu cuenta.",
+      step1_title: "Inicia sesión en tu cuenta",
+      step1_desc: "Accede a tu panel desde cualquier dispositivo, en cualquier momento.",
+      step2_title: "Añade fondos con tu tarjeta",
+      step2_desc: "Los depósitos están listos para invertir en pocos minutos.",
+      step3_title: "Elige un fondo y haz crecer tu dinero",
+      step3_desc: "Elige entre fondos indexados populares y sigue el rendimiento en tiempo real.",
+      funds_title: "Fondos populares ahora mismo",
+      funds_sub: "Un ejemplo de en qué está invirtiendo la gente este mes.",
+      security_title: "Diseñado pensando en la seguridad",
+      security_text: "Los datos de tu cuenta y tarjeta están protegidos igual que los bancos protegen los suyos. Nunca vendemos tus datos, y cada sesión está totalmente cifrada.",
+      security_li1: "Autenticación de dos factores en cada inicio de sesión",
+      security_li2: "Transferencia de datos cifrada (TLS) en toda la plataforma",
+      security_li3: "Los fondos de los clientes se mantienen separados de los de la empresa",
+      security_li4: "Monitorización de fraudes las 24 horas",
+      footer_desc: "Invierte de forma sencilla y segura en los fondos más populares del mundo.",
+      footer_company_head: "Empresa", footer_about_us: "Sobre nosotros", footer_careers: "Empleo", footer_press: "Prensa", footer_contact: "Contacto",
+      footer_support_head: "Soporte", footer_help_center: "Centro de ayuda", footer_faq: "Preguntas frecuentes", footer_security: "Seguridad",
+      footer_legal_head: "Legal", footer_terms: "Términos de servicio", footer_privacy: "Política de privacidad", footer_risk: "Advertencia de riesgo",
+      footer_risk_disclaimer: "Invertir conlleva riesgos, incluida la posible pérdida del capital. La rentabilidad pasada no garantiza resultados futuros.",
+      footer_copyright: "© 2026 Investo. Todos los derechos reservados."
+    },
+    fr: {
+      nav_login: "Se connecter",
+      hero_title: "Faites travailler votre argent, sans deviner.",
+      hero_subtitle: "Suivez un vrai portefeuille, découvrez des fonds indiciels populaires et transférez de l'argent en quelques secondes — conçu pour ceux qui veulent investir, pas déchiffrer des tableurs.",
+      hero_cta_primary: "Se connecter à votre compte",
+      hero_cta_secondary: "Voir comment ça marche",
+      hero_stat: "rendement moyen des fonds cette année",
+      how_title: "Trois étapes vers votre premier investissement",
+      how_sub: "Pas de paperasse, pas de visites en agence. Tout se passe directement dans votre compte.",
+      step1_title: "Connectez-vous à votre compte",
+      step1_desc: "Accédez à votre tableau de bord depuis n'importe quel appareil, à tout moment.",
+      step2_title: "Ajoutez des fonds par carte",
+      step2_desc: "Les dépôts sont prêts à être investis en quelques minutes.",
+      step3_title: "Choisissez un fonds et faites fructifier votre argent",
+      step3_desc: "Choisissez parmi des fonds indiciels populaires et suivez la performance en temps réel.",
+      funds_title: "Fonds populaires en ce moment",
+      funds_sub: "Un aperçu de ce dans quoi les gens investissent ce mois-ci.",
+      security_title: "Conçu en pensant à la sécurité",
+      security_text: "Les données de votre compte et de votre carte sont protégées comme le font les banques. Nous ne vendons jamais vos données, et chaque session est entièrement chiffrée.",
+      security_li1: "Authentification à deux facteurs à chaque connexion",
+      security_li2: "Transfert de données chiffré (TLS) sur toute la plateforme",
+      security_li3: "Les fonds des clients sont séparés de ceux de l'entreprise",
+      security_li4: "Surveillance des fraudes 24h/24",
+      footer_desc: "Investissez simplement et en toute sécurité dans les fonds les plus populaires au monde.",
+      footer_company_head: "Entreprise", footer_about_us: "À propos", footer_careers: "Carrières", footer_press: "Presse", footer_contact: "Contact",
+      footer_support_head: "Assistance", footer_help_center: "Centre d'aide", footer_faq: "FAQ", footer_security: "Sécurité",
+      footer_legal_head: "Mentions légales", footer_terms: "Conditions d'utilisation", footer_privacy: "Politique de confidentialité", footer_risk: "Avertissement sur les risques",
+      footer_risk_disclaimer: "Investir comporte des risques, y compris la perte possible du capital. Les performances passées ne garantissent pas les résultats futurs.",
+      footer_copyright: "© 2026 Investo. Tous droits réservés."
+    },
+    lv: {
+      nav_login: "Pieslēgties",
+      hero_title: "Liec savai naudai strādāt, bez minēšanas.",
+      hero_subtitle: "Sekojiet līdzi reālam portfelim, izpētiet populārus indeksu fondus un pārskaitiet naudu dažu sekunžu laikā — radīts cilvēkiem, kuri vēlas ieguldīt, nevis atšifrēt izklājlapas.",
+      hero_cta_primary: "Pieslēgties savam kontam",
+      hero_cta_secondary: "Skatīt, kā tas darbojas",
+      hero_stat: "vidējā fondu ienesīgums šogad",
+      how_title: "Trīs soļi līdz pirmajam ieguldījumam",
+      how_sub: "Bez papīriem un filiāļu apmeklējumiem. Viss notiek tieši jūsu kontā.",
+      step1_title: "Pieslēdzieties savam kontam",
+      step1_desc: "Piekļūstiet savai pārskatu panelim no jebkuras ierīces, jebkurā laikā.",
+      step2_title: "Pievienojiet naudu ar karti",
+      step2_desc: "Iemaksas ir gatavas ieguldīšanai dažu minūšu laikā.",
+      step3_title: "Izvēlieties fondu un vairojiet savu naudu",
+      step3_desc: "Izvēlieties no populāriem indeksu fondiem un sekojiet līdzi ienesīgumam reālajā laikā.",
+      funds_title: "Populāri fondi tieši tagad",
+      funds_sub: "Piemērs tam, kur cilvēki iegulda šomēnes.",
+      security_title: "Radīts, domājot par drošību",
+      security_text: "Jūsu konta un kartes dati ir aizsargāti tāpat, kā bankas aizsargā savus. Mēs nekad nepārdodam jūsu datus, un katra sesija ir pilnībā šifrēta.",
+      security_li1: "Divfaktoru autentifikācija katrā pieslēgšanās reizē",
+      security_li2: "Šifrēta datu pārraide (TLS) visā platformā",
+      security_li3: "Klientu līdzekļi tiek turēti atsevišķi no uzņēmuma līdzekļiem",
+      security_li4: "Krāpšanas uzraudzība visu diennakti",
+      footer_desc: "Ieguldiet vienkārši un droši pasaules populārākajos fondos.",
+      footer_company_head: "Uzņēmums", footer_about_us: "Par mums", footer_careers: "Karjera", footer_press: "Jaunumi", footer_contact: "Kontakti",
+      footer_support_head: "Atbalsts", footer_help_center: "Palīdzības centrs", footer_faq: "BUJ", footer_security: "Drošība",
+      footer_legal_head: "Juridiskā informācija", footer_terms: "Lietošanas noteikumi", footer_privacy: "Privātuma politika", footer_risk: "Riska brīdinājums",
+      footer_risk_disclaimer: "Ieguldīšana ir saistīta ar risku, tostarp iespējamu kapitāla zaudēšanu. Iepriekšējie rezultāti negarantē nākotnes rezultātus.",
+      footer_copyright: "© 2026 Investo. Visas tiesības aizsargātas."
+    },
+    lt: {
+      nav_login: "Prisijungti",
+      hero_title: "Priverskite savo pinigus dirbti – be spėlionių.",
+      hero_subtitle: "Sekite realų portfelį, atraskite populiarius indeksinius fondus ir pervedinėkite pinigus per sekundes — sukurta žmonėms, norintiems investuoti, o ne aiškintis lenteles.",
+      hero_cta_primary: "Prisijungti prie paskyros",
+      hero_cta_secondary: "Pažiūrėti, kaip tai veikia",
+      hero_stat: "vidutinė fondų grąža šiais metais",
+      how_title: "Trys žingsniai iki pirmosios investicijos",
+      how_sub: "Jokių popierių, jokių vizitų į skyrius. Viskas vyksta tiesiai jūsų paskyroje.",
+      step1_title: "Prisijunkite prie paskyros",
+      step1_desc: "Pasiekite savo skydelį iš bet kurio įrenginio, bet kuriuo metu.",
+      step2_title: "Pridėkite lėšų kortele",
+      step2_desc: "Įnašai paruošti investuoti per kelias minutes.",
+      step3_title: "Pasirinkite fondą ir auginkite savo pinigus",
+      step3_desc: "Rinkitės iš populiarių indeksinių fondų ir sekite grąžą realiuoju laiku.",
+      funds_title: "Populiarūs fondai dabar",
+      funds_sub: "Pavyzdys, į ką žmonės investuoja šį mėnesį.",
+      security_title: "Sukurta galvojant apie saugumą",
+      security_text: "Jūsų paskyros ir kortelės duomenys apsaugoti taip pat, kaip bankai saugo savuosius. Mes niekada neparduodame jūsų duomenų, o kiekviena sesija yra visiškai šifruota.",
+      security_li1: "Dviejų faktorių autentifikacija kiekvieną kartą prisijungiant",
+      security_li2: "Šifruotas duomenų perdavimas (TLS) visoje platformoje",
+      security_li3: "Klientų lėšos laikomos atskirai nuo įmonės lėšų",
+      security_li4: "Visą parą vykdoma sukčiavimo stebėsena",
+      footer_desc: "Investuokite paprastai ir saugiai į populiariausius pasaulio fondus.",
+      footer_company_head: "Įmonė", footer_about_us: "Apie mus", footer_careers: "Karjera", footer_press: "Naujienos", footer_contact: "Kontaktai",
+      footer_support_head: "Pagalba", footer_help_center: "Pagalbos centras", footer_faq: "DUK", footer_security: "Saugumas",
+      footer_legal_head: "Teisinė informacija", footer_terms: "Naudojimo sąlygos", footer_privacy: "Privatumo politika", footer_risk: "Rizikos įspėjimas",
+      footer_risk_disclaimer: "Investavimas susijęs su rizika, įskaitant galimą kapitalo praradimą. Ankstesni rezultatai negarantuoja būsimų rezultatų.",
+      footer_copyright: "© 2026 Investo. Visos teisės saugomos."
+    },
+    pl: {
+      nav_login: "Zaloguj się",
+      hero_title: "Spraw, by Twoje pieniądze pracowały – bez zgadywania.",
+      hero_subtitle: "Śledź prawdziwy portfel, odkrywaj popularne fundusze indeksowe i przelewaj pieniądze w kilka sekund — stworzone dla tych, którzy chcą inwestować, a nie rozszyfrowywać arkusze kalkulacyjne.",
+      hero_cta_primary: "Zaloguj się do konta",
+      hero_cta_secondary: "Zobacz, jak to działa",
+      hero_stat: "średni zwrot z funduszy w tym roku",
+      how_title: "Trzy kroki do pierwszej inwestycji",
+      how_sub: "Żadnych formalności ani wizyt w oddziale. Wszystko dzieje się bezpośrednio na Twoim koncie.",
+      step1_title: "Zaloguj się do konta",
+      step1_desc: "Uzyskaj dostęp do panelu z dowolnego urządzenia, o dowolnej porze.",
+      step2_title: "Dodaj środki kartą",
+      step2_desc: "Wpłaty są gotowe do inwestowania w ciągu kilku minut.",
+      step3_title: "Wybierz fundusz i pomnażaj swoje pieniądze",
+      step3_desc: "Wybieraj spośród popularnych funduszy indeksowych i śledź wyniki w czasie rzeczywistym.",
+      funds_title: "Popularne fundusze w tej chwili",
+      funds_sub: "Przykład tego, w co ludzie inwestują w tym miesiącu.",
+      security_title: "Zaprojektowane z myślą o bezpieczeństwie",
+      security_text: "Dane Twojego konta i karty są chronione tak samo, jak banki chronią swoje. Nigdy nie sprzedajemy Twoich danych, a każda sesja jest w pełni szyfrowana.",
+      security_li1: "Uwierzytelnianie dwuskładnikowe przy każdym logowaniu",
+      security_li2: "Szyfrowana transmisja danych (TLS) w całej platformie",
+      security_li3: "Środki klientów są przechowywane oddzielnie od środków firmy",
+      security_li4: "Całodobowe monitorowanie oszustw",
+      footer_desc: "Inwestuj prosto i bezpiecznie w najpopularniejsze fundusze na świecie.",
+      footer_company_head: "Firma", footer_about_us: "O nas", footer_careers: "Kariera", footer_press: "Aktualności", footer_contact: "Kontakt",
+      footer_support_head: "Wsparcie", footer_help_center: "Centrum pomocy", footer_faq: "FAQ", footer_security: "Bezpieczeństwo",
+      footer_legal_head: "Informacje prawne", footer_terms: "Warunki korzystania", footer_privacy: "Polityka prywatności", footer_risk: "Ostrzeżenie o ryzyku",
+      footer_risk_disclaimer: "Inwestowanie wiąże się z ryzykiem, w tym z możliwością utraty kapitału. Wyniki osiągnięte w przeszłości nie gwarantują przyszłych rezultatów.",
+      footer_copyright: "© 2026 Investo. Wszelkie prawa zastrzeżone."
+    }
+  };
+
+  const languageList = [
+    { code: 'en', flag: '🇬🇧', label: 'ENG', name: 'English' },
+    { code: 'et', flag: '🇪🇪', label: 'EST', name: 'Eesti' },
+    { code: 'ru', flag: '🇷🇺', label: 'RUS', name: 'Русский' },
+    { code: 'fi', flag: '🇫🇮', label: 'FIN', name: 'Suomi' },
+    { code: 'de', flag: '🇩🇪', label: 'GER', name: 'Deutsch' },
+    { code: 'es', flag: '🇪🇸', label: 'ESP', name: 'Español' },
+    { code: 'fr', flag: '🇫🇷', label: 'FRA', name: 'Français' },
+    { code: 'lv', flag: '🇱🇻', label: 'LAT', name: 'Latviešu' },
+    { code: 'lt', flag: '🇱🇹', label: 'LIT', name: 'Lietuvių' },
+    { code: 'pl', flag: '🇵🇱', label: 'POL', name: 'Polski' }
+  ];
+
+  let currentLang = 'en';
+
+  const langDropdown = document.getElementById('langDropdown');
+  languageList.forEach(l => {
+    const btn = document.createElement('button');
+    btn.className = 'lang-item';
+    btn.setAttribute('data-lang', l.code);
+    btn.innerHTML = `<span>${l.flag}</span><span>${l.name}</span>`;
+    btn.addEventListener('click', () => {
+      applyLanguage(l.code);
+      langMenu.classList.remove('open');
+    });
+    langDropdown.appendChild(btn);
+  });
+
+  function applyLanguage(lang){
+    const t = translations[lang] || translations.en;
+    currentLang = translations[lang] ? lang : 'en';
+    document.documentElement.setAttribute('lang', currentLang);
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if(t[key] !== undefined){ el.textContent = t[key]; }
+    });
+    const meta = languageList.find(l => l.code === currentLang);
+    document.getElementById('langFlag').textContent = meta.flag;
+    document.getElementById('langCode').textContent = meta.label;
+    document.querySelectorAll('.lang-item').forEach(item => {
+      item.classList.toggle('active', item.getAttribute('data-lang') === currentLang);
+    });
+  }
+
+  const urlParams = new URLSearchParams(window.location.search);
+  applyLanguage(translations[urlParams.get('lang')] ? urlParams.get('lang') : 'en');
+
+  const langMenu = document.getElementById('langMenu');
+  const langBtn = document.getElementById('langBtn');
+  langBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    langMenu.classList.toggle('open');
+  });
+  document.addEventListener('click', (e) => {
+    if(!langMenu.contains(e.target)){
+      langMenu.classList.remove('open');
+    }
+  });
+
+  // kanna keel kaasa Log in nuppudel, et sisselogimisleht avaneks samas keeles
+  document.querySelectorAll('a[href="login.html"]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = 'login.html?lang=' + currentLang;
+    });
+  });
+</script>
+</body>
+</html>
